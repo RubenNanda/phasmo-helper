@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Checkbox
 import androidx.compose.material.MaterialTheme
@@ -14,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -24,13 +26,16 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.*
-import data.phasmo.Evidences
+import data.phasmo.Evidence
+import data.structures.TriState
 import org.jnativehook.GlobalScreen
 import org.jnativehook.keyboard.NativeKeyEvent
 import org.jnativehook.keyboard.NativeKeyListener
 import java.util.logging.Level
 import java.util.logging.Logger
 
+private var windowState: TriState by mutableStateOf(TriState.TRUE)
+private var evidenceMap = SnapshotStateMap<Evidence, Boolean>()
 fun main() = application {
     Window(
         onCloseRequest = ::exitApplication,
@@ -43,15 +48,19 @@ fun main() = application {
     ) {
         Main().App()
     }
+
 }
 
 class Main : NativeKeyListener {
-    private var windowState: TriState by mutableStateOf(TriState.TRUE)
     private val log: Logger = Logger.getLogger(GlobalScreen::class.java.getPackage().name)
 
-    @Composable
     @Preview
+    @Composable
     fun App() {
+        Evidence.values().forEach { evidence ->
+            evidenceMap[evidence] = false
+        }
+
         content()
 
         GlobalScreen.registerNativeHook()
@@ -61,9 +70,8 @@ class Main : NativeKeyListener {
         log.level = Level.INFO;
     }
 
-    @Preview
-    @OptIn(ExperimentalUnitApi::class, ExperimentalComposeUiApi::class)
     @Composable
+    @OptIn(ExperimentalUnitApi::class, ExperimentalComposeUiApi::class)
     fun content() {
         MaterialTheme {
             when (windowState) {
@@ -78,19 +86,24 @@ class Main : NativeKeyListener {
                             Text(text = "Evidences:")
 
                             LazyColumn {
-                                for (evidence in Evidences.values()) {
-                                    item {
-                                        Row {
-                                            Checkbox(checked = false, onCheckedChange = null)
-                                            Image(
-                                                painter = painterResource(evidence.getIconPath()),
-                                                contentDescription = "item icon",
+                                items(Evidence.values()) { evidence ->
+                                    Row {
+                                        Text(text = evidence.keyBinding.removePrefix("NumPad "))
+                                        evidenceMap[evidence]?.let {
+                                            Checkbox(
+                                                checked = it,
+                                                onCheckedChange = null
                                             )
-                                            Text(text = evidence.displayName)
                                         }
+
+                                        Image(
+                                            painter = painterResource(evidence.getIconPath()),
+                                            contentDescription = "item icon",
+                                        )
+                                        Text(text = evidence.displayName)
                                     }
                                 }
-                           }
+                            }
                         }
                     }
                 }
@@ -101,15 +114,18 @@ class Main : NativeKeyListener {
                         shape = RoundedCornerShape(20.dp)
                     ) {
                         LazyColumn(modifier = Modifier.padding(15.dp)) {
-                            for (evidence in Evidences.values()) {
-                                item {
-                                    Row {
-                                        Checkbox(checked = false, onCheckedChange = null)
-                                        Image(
-                                            painter = painterResource(evidence.getIconPath()),
-                                            contentDescription = "item icon",
+                            items(Evidence.values()) { evidence ->
+                                Row {
+                                    evidenceMap[evidence]?.let {
+                                        Checkbox(
+                                            checked = it,
+                                            onCheckedChange = null
                                         )
                                     }
+                                    Image(
+                                        painter = painterResource(evidence.getIconPath()),
+                                        contentDescription = "item icon",
+                                    )
                                 }
                             }
                         }
@@ -119,12 +135,19 @@ class Main : NativeKeyListener {
 
                 }
             }
-
         }
     }
 
     override fun nativeKeyPressed(nativeKeyEvent: NativeKeyEvent?) {
-        when (val key = nativeKeyEvent?.paramString()?.let { getKeyFromParamString(it) }) {
+        val key = nativeKeyEvent?.paramString()?.let { getKeyFromParamString(it) }
+
+        for(evidence in Evidence.values()){
+            if(evidence.keyBinding == key){
+                evidenceMap[evidence] = !evidenceMap[evidence]!!
+            }
+        }
+
+        when (key) {
             "NumPad 0" -> {
                 windowState = windowState.next()
             }
