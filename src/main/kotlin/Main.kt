@@ -1,4 +1,5 @@
 // Copyright 2000-2021 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
@@ -74,65 +75,35 @@ class Main : NativeKeyListener {
     @OptIn(ExperimentalUnitApi::class, ExperimentalComposeUiApi::class)
     fun content() {
         MaterialTheme {
-            when (windowState) {
-                TriState.TRUE -> { // full size
-                    Surface(
-                        modifier = Modifier.padding(15.dp).shadow(3.dp, RoundedCornerShape(20.dp)),
-                        color = Color(55, 55, 55, 180),
-                        shape = RoundedCornerShape(20.dp)
-                    ) {
-                        Column(modifier = Modifier.padding(15.dp)) {
-                            Text(text = "Phasmophobia Helper 3.0", fontSize = TextUnit(1.5f, TextUnitType.Em))
-                            Text(text = "Evidences:")
-
-                            LazyColumn {
-                                items(Evidence.values()) { evidence ->
-                                    Row {
-                                        Text(text = evidence.keyBinding.removePrefix("NumPad "))
-                                        evidenceMap[evidence]?.let {
-                                            Checkbox(
-                                                checked = it,
-                                                onCheckedChange = null
-                                            )
-                                        }
-
-                                        Image(
-                                            painter = painterResource(evidence.getIconPath()),
-                                            contentDescription = "item icon",
-                                        )
-                                        Text(text = evidence.displayName)
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                TriState.FALSE -> { // half size
-                    Surface(
-                        modifier = Modifier.padding(15.dp).shadow(3.dp, RoundedCornerShape(20.dp)),
-                        color = Color(55, 55, 55, 180),
-                        shape = RoundedCornerShape(20.dp)
-                    ) {
-                        LazyColumn(modifier = Modifier.padding(15.dp)) {
+            AnimatedVisibility(windowState != TriState.TRALSE) {
+                Surface(
+                    modifier = Modifier.padding(15.dp).shadow(3.dp, RoundedCornerShape(20.dp)),
+                    color = Color(55, 55, 55, 180),
+                    shape = RoundedCornerShape(20.dp)
+                ) {
+                    Column(modifier = Modifier.padding(15.dp)) {
+                        LazyColumn {
                             items(Evidence.values()) { evidence ->
                                 Row {
+                                    Text(text = evidence.keyBinding.removePrefix("NumPad "))
                                     evidenceMap[evidence]?.let {
                                         Checkbox(
                                             checked = it,
                                             onCheckedChange = null
                                         )
                                     }
+
                                     Image(
                                         painter = painterResource(evidence.getIconPath()),
                                         contentDescription = "item icon",
                                     )
+                                    AnimatedVisibility(windowState == TriState.TRUE) {
+                                        Text(text = evidence.displayName)
+                                    }
                                 }
                             }
                         }
                     }
-                }
-                TriState.TRALSE -> { // closed
-
                 }
             }
         }
