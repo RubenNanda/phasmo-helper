@@ -1,5 +1,6 @@
 package data.json
 
+import Main
 import com.google.gson.Gson
 import data.json.model.Evidence
 import data.json.model.EvidenceHelperList
@@ -9,15 +10,17 @@ import java.io.File
 import java.lang.reflect.Type
 
 class DataManager {
+
     enum class File(val filePath: String, val type: Type) {
-        GHOST("src/main/resources/assets/json/ghost.json", GhostHelperList::class.java),
-        EVIDENCE("src/main/resources/assets/json/evidence.json", EvidenceHelperList::class.java);
+        GHOST("assets/json/ghost.json", GhostHelperList::class.java),
+        EVIDENCE("assets/json/evidence.json", EvidenceHelperList::class.java);
     }
 
     private val gson = Gson()
 
+    /*
     fun saveFile(outputFile: File, any: Any) {
-        val file = File(outputFile.filePath)
+        val file = File(Main::class.java.classLoader.getResource(outputFile.filePath).path)
 
         if (!file.exists()) {
             file.parentFile.mkdirs()
@@ -27,15 +30,10 @@ class DataManager {
 
         file.bufferedWriter().use { out -> out.write(gson.toJson(any)) }
     }
+     */
 
     private fun loadFile(inputFile: File): Any? {
-        val file = File(inputFile.filePath)
-
-        if (!file.exists()) return null
-
-        var jsonString = ""
-        file.bufferedReader().forEachLine { jsonString += it }
-        return gson.fromJson(file.bufferedReader(), inputFile.type)
+        return gson.fromJson(javaClass.classLoader.getResource(inputFile.filePath).readText(), inputFile.type)
     }
 
     fun getGhosts(): List<Ghost> {

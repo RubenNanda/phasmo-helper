@@ -105,6 +105,7 @@ class Main : NativeKeyListener {
         val key = nativeKeyEvent?.paramString()?.let { getKeyFromParamString(it) }
         val evidenceMap = evidenceList.evidenceMap
 
+
         for(evidence in evidenceMap.keys){
             if(evidence.keyBinding == key){
                 evidenceMap[evidence] = !evidenceMap[evidence]!!

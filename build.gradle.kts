@@ -28,16 +28,20 @@ tasks.test {
 }
 
 tasks.withType<KotlinCompile>() {
-    kotlinOptions.jvmTarget = "11"
+    kotlinOptions.jvmTarget = "16"
 }
 
 compose.desktop {
     application {
         mainClass = "MainKt"
         nativeDistributions {
+            modules("java.instrument", "java.sql", "jdk.unsupported")
+
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "phasmo-helper"
             packageVersion = "1.0.0"
+
+            appResourcesRootDir.set(project.layout.projectDirectory.dir("resources"))
         }
     }
 }
