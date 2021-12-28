@@ -2,16 +2,16 @@ package data.json
 
 import com.google.gson.Gson
 import data.json.model.Evidence
-import data.json.model.EvidenceList
+import data.json.model.EvidenceHelperList
 import data.json.model.Ghost
-import data.json.model.GhostList
+import data.json.model.GhostHelperList
 import java.io.File
 import java.lang.reflect.Type
 
 class DataManager {
     enum class File(val filePath: String, val type: Type) {
-        GHOST("src/main/resources/assets/json/ghost.json", GhostList::class.java),
-        EVIDENCE("src/main/resources/assets/json/evidence.json", EvidenceList::class.java);
+        GHOST("src/main/resources/assets/json/ghost.json", GhostHelperList::class.java),
+        EVIDENCE("src/main/resources/assets/json/evidence.json", EvidenceHelperList::class.java);
     }
 
     private val gson = Gson()
@@ -41,7 +41,7 @@ class DataManager {
     fun getGhosts(): List<Ghost> {
         val file = loadFile(File.GHOST)
 
-        if(file is GhostList){
+        if(file is GhostHelperList){
             return file.ghostList
         }
 
@@ -51,7 +51,7 @@ class DataManager {
     fun getEvidences(): List<Evidence> {
         val file = loadFile(File.EVIDENCE)
 
-        if(file is EvidenceList){
+        if(file is EvidenceHelperList){
             return file.evidenceList
         }
 

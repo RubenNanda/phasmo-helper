@@ -1,34 +1,23 @@
 // Copyright 2000-2021 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.desktop.ui.tooling.preview.Preview
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Checkbox
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.ExperimentalUnitApi
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.*
+import components.EvidenceList
 import data.json.DataManager
 import data.json.model.Evidence
-import data.json.model.EvidenceList
 import data.json.model.Ghost
 import data.structures.TriState
 import org.jnativehook.GlobalScreen
@@ -38,8 +27,11 @@ import java.util.logging.Level
 import java.util.logging.Logger
 
 private var windowState: TriState by mutableStateOf(TriState.TRUE)
-private var evidenceMap = SnapshotStateMap<Evidence, Boolean>()
+
 private val ghostList = SnapshotStateList<Ghost>()
+
+private val evidenceMap: SnapshotStateMap<Evidence, Boolean> = SnapshotStateMap()
+private var evidenceList = mutableStateOf(EvidenceList(evidenceMap))
 
 fun main() = application {
     Window(
@@ -51,7 +43,6 @@ fun main() = application {
         state = WindowState(WindowPlacement.Floating, false, WindowPosition(0.dp, 0.dp)),
         resizable = false,
     ) {
-
         val dataManager = DataManager()
 
         ghostList.addAll(dataManager.getGhosts())
@@ -62,7 +53,6 @@ fun main() = application {
 
         Main().App()
     }
-
 }
 
 class Main : NativeKeyListener {
@@ -76,8 +66,8 @@ class Main : NativeKeyListener {
         GlobalScreen.registerNativeHook()
         GlobalScreen.addNativeKeyListener(this@Main)
 
-        log.useParentHandlers = false;
-        log.level = Level.INFO;
+        log.useParentHandlers = false
+        log.level = Level.INFO
     }
 
     @Composable
@@ -90,29 +80,7 @@ class Main : NativeKeyListener {
                     color = Color(55, 55, 55, 180),
                     shape = RoundedCornerShape(20.dp)
                 ) {
-                    Column(modifier = Modifier.padding(15.dp)) {
-                        LazyColumn {
-                            items(evidenceMap.keys.toList()) { evidence ->
-                                Row {
-                                    Text(text = evidence.keyBinding.removePrefix("NumPad "))
-                                    evidenceMap[evidence]?.let {
-                                        Checkbox(
-                                            checked = it,
-                                            onCheckedChange = null
-                                        )
-                                    }
-
-                                    Image(
-                                        painter = painterResource(evidence.iconPath),
-                                        contentDescription = "item icon",
-                                    )
-                                    AnimatedVisibility(windowState == TriState.TRUE) {
-                                        Text(text = evidence.displayName)
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    evidenceList.component1().build(windowState == TriState.TRUE)
                 }
             }
         }
@@ -120,6 +88,7 @@ class Main : NativeKeyListener {
 
     override fun nativeKeyPressed(nativeKeyEvent: NativeKeyEvent?) {
         val key = nativeKeyEvent?.paramString()?.let { getKeyFromParamString(it) }
+        val evidenceMap = evidenceList.component1().evidenceMap
 
         for(evidence in evidenceMap.keys){
             if(evidence.keyBinding == key){
