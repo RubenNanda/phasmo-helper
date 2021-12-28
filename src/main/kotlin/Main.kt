@@ -2,6 +2,7 @@
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -52,7 +53,7 @@ fun main() = application {
         transparent = true,
         undecorated = true,
         alwaysOnTop = true,
-        state = WindowState(WindowPlacement.Floating, false, WindowPosition(0.dp, 0.dp)),
+        state = WindowState(WindowPlacement.Floating, false, WindowPosition(0.dp, 0.dp), 300.dp, 470.dp),
         resizable = false,
     ) {
         val dataManager = DataManager()

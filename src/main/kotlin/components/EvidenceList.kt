@@ -42,7 +42,7 @@ class EvidenceList(val evidenceMap: SnapshotStateMap<Evidence, Boolean>) {
     @Composable
     fun build(showName: Boolean) {
         LazyColumn {
-            items(evidenceMap.keys.toList()) { evidence ->
+            items(evidenceMap.keys.toList().sortedBy { evidence -> evidence.keyBinding.removePrefix("NumPad ").toInt() }) { evidence ->
                 Row {
                     Text(text = evidence.keyBinding.removePrefix("NumPad "))
                     evidenceMap[evidence]?.let {
