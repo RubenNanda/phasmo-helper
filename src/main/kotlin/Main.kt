@@ -1,11 +1,18 @@
 // Copyright 2000-2021 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.desktop.ui.tooling.preview.Preview
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
-import androidx.compose.runtime.*
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -16,10 +23,12 @@ import androidx.compose.ui.unit.ExperimentalUnitApi
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.*
 import components.EvidenceList
+import components.GhostList
 import data.json.DataManager
 import data.json.model.Evidence
 import data.json.model.Ghost
 import data.structures.TriState
+import logic.GhostChecker
 import org.jnativehook.GlobalScreen
 import org.jnativehook.keyboard.NativeKeyEvent
 import org.jnativehook.keyboard.NativeKeyListener
@@ -28,10 +37,13 @@ import java.util.logging.Logger
 
 private var windowState: TriState by mutableStateOf(TriState.TRUE)
 
-private val ghostList = SnapshotStateList<Ghost>()
+private val ghosts = SnapshotStateList<Ghost>()
 
 private val evidenceMap: SnapshotStateMap<Evidence, Boolean> = SnapshotStateMap()
-private var evidenceList = mutableStateOf(EvidenceList(evidenceMap))
+private val ghostChecker = mutableStateOf(GhostChecker(evidenceMap))
+
+private var evidenceList = EvidenceList(evidenceMap)
+private val ghostList = GhostList(ghosts, ghostChecker)
 
 fun main() = application {
     Window(
@@ -45,7 +57,7 @@ fun main() = application {
     ) {
         val dataManager = DataManager()
 
-        ghostList.addAll(dataManager.getGhosts())
+        ghosts.addAll(dataManager.getGhosts())
 
         dataManager.getEvidences().forEach { evidence ->
             evidenceMap[evidence] = false
@@ -80,7 +92,10 @@ class Main : NativeKeyListener {
                     color = Color(55, 55, 55, 180),
                     shape = RoundedCornerShape(20.dp)
                 ) {
-                    evidenceList.component1().build(windowState == TriState.TRUE)
+                    Column(modifier = Modifier.padding(15.dp)) {
+                        evidenceList.build(windowState == TriState.TRUE)
+                        ghostList.build(windowState == TriState.TRUE)
+                    }
                 }
             }
         }
@@ -88,7 +103,7 @@ class Main : NativeKeyListener {
 
     override fun nativeKeyPressed(nativeKeyEvent: NativeKeyEvent?) {
         val key = nativeKeyEvent?.paramString()?.let { getKeyFromParamString(it) }
-        val evidenceMap = evidenceList.component1().evidenceMap
+        val evidenceMap = evidenceList.evidenceMap
 
         for(evidence in evidenceMap.keys){
             if(evidence.keyBinding == key){
