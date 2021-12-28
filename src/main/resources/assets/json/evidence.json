@@ -1,0 +1,39 @@
+{
+  "evidenceList": [
+    {
+      "displayName": "Fingerprints",
+      "iconPath": "./assets/icons/evidences/FINGERPRINTS.png",
+      "keyBinding": "NumPad 1"
+    },
+    {
+      "displayName": "Ghost Orb",
+      "iconPath": "./assets/icons/evidences/GHOST_ORB.png",
+      "keyBinding": "NumPad 2"
+    },
+    {
+      "displayName": "D.O.T.S Projector",
+      "iconPath": "./assets/icons/evidences/DOTS_PROJECTOR.png",
+      "keyBinding": "NumPad 3"
+    },
+    {
+      "displayName": "Ghost Writing",
+      "iconPath": "./assets/icons/evidences/GHOST_WRITING.png",
+      "keyBinding": "NumPad 4"
+    },
+    {
+      "displayName": "Freezing Temperatures",
+      "iconPath": "./assets/icons/evidences/FREEZING_TEMPERATURES.png",
+      "keyBinding": "NumPad 5"
+    },
+    {
+      "displayName": "EMF level 5",
+      "iconPath": "./assets/icons/evidences/EMF_LEVEL_5.png",
+      "keyBinding": "NumPad 6"
+    },
+    {
+      "displayName": "Spirit Box",
+      "iconPath": "./assets/icons/evidences/SPIRIT_BOX.png",
+      "keyBinding": "NumPad 7"
+    }
+  ]
+}

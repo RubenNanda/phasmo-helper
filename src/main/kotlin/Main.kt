@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -23,11 +24,12 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.ExperimentalUnitApi
-import androidx.compose.ui.unit.TextUnit
-import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.*
-import data.phasmo.Evidence
+import data.json.DataManager
+import data.json.model.Evidence
+import data.json.model.EvidenceList
+import data.json.model.Ghost
 import data.structures.TriState
 import org.jnativehook.GlobalScreen
 import org.jnativehook.keyboard.NativeKeyEvent
@@ -37,6 +39,8 @@ import java.util.logging.Logger
 
 private var windowState: TriState by mutableStateOf(TriState.TRUE)
 private var evidenceMap = SnapshotStateMap<Evidence, Boolean>()
+private val ghostList = SnapshotStateList<Ghost>()
+
 fun main() = application {
     Window(
         onCloseRequest = ::exitApplication,
@@ -47,6 +51,15 @@ fun main() = application {
         state = WindowState(WindowPlacement.Floating, false, WindowPosition(0.dp, 0.dp)),
         resizable = false,
     ) {
+
+        val dataManager = DataManager()
+
+        ghostList.addAll(dataManager.getGhosts())
+
+        dataManager.getEvidences().forEach { evidence ->
+            evidenceMap[evidence] = false
+        }
+
         Main().App()
     }
 
@@ -58,10 +71,6 @@ class Main : NativeKeyListener {
     @Preview
     @Composable
     fun App() {
-        Evidence.values().forEach { evidence ->
-            evidenceMap[evidence] = false
-        }
-
         content()
 
         GlobalScreen.registerNativeHook()
@@ -83,7 +92,7 @@ class Main : NativeKeyListener {
                 ) {
                     Column(modifier = Modifier.padding(15.dp)) {
                         LazyColumn {
-                            items(Evidence.values()) { evidence ->
+                            items(evidenceMap.keys.toList()) { evidence ->
                                 Row {
                                     Text(text = evidence.keyBinding.removePrefix("NumPad "))
                                     evidenceMap[evidence]?.let {
@@ -94,7 +103,7 @@ class Main : NativeKeyListener {
                                     }
 
                                     Image(
-                                        painter = painterResource(evidence.getIconPath()),
+                                        painter = painterResource(evidence.iconPath),
                                         contentDescription = "item icon",
                                     )
                                     AnimatedVisibility(windowState == TriState.TRUE) {
@@ -112,7 +121,7 @@ class Main : NativeKeyListener {
     override fun nativeKeyPressed(nativeKeyEvent: NativeKeyEvent?) {
         val key = nativeKeyEvent?.paramString()?.let { getKeyFromParamString(it) }
 
-        for(evidence in Evidence.values()){
+        for(evidence in evidenceMap.keys){
             if(evidence.keyBinding == key){
                 evidenceMap[evidence] = !evidenceMap[evidence]!!
             }

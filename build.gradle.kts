@@ -20,7 +20,7 @@ dependencies {
     testImplementation(kotlin("test"))
     implementation(compose.desktop.currentOs)
     implementation("com.1stleg:jnativehook:2.0.2")
-
+    implementation("com.google.code.gson:gson:2.8.9")
 }
 
 tasks.test {
