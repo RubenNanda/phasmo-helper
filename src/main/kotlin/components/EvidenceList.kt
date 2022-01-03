@@ -13,41 +13,41 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.loadImageBitmap
-import androidx.compose.ui.res.loadSvgPainter
-import androidx.compose.ui.res.loadXmlImageVector
-import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.ExperimentalUnitApi
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import data.json.model.Evidence
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.xml.sax.InputSource
-import java.io.File
 import java.io.IOException
-import java.net.URL
 
-class EvidenceList(val evidenceMap: SnapshotStateMap<Evidence, Boolean>) {
+class EvidenceList() {
     @Composable
-    fun build(showName: Boolean) {
+    fun build(
+        showName: Boolean,
+        selectedEvidences: SnapshotStateMap<Evidence, Boolean>,
+        availableEvidences: SnapshotStateList<Evidence>
+    ) {
         LazyColumn {
-            items(evidenceMap.keys.toList().sortedBy { evidence -> evidence.keyBinding.removePrefix("NumPad ").toInt() }) { evidence ->
+            items(selectedEvidences.keys.sortedBy { evidence ->
+                evidence.keyBinding.removePrefix("NumPad ").toInt()
+            }) { evidence ->
                 Row {
                     Text(
                         color = Color.White,
                         fontSize = TextUnit(1.0f, TextUnitType.Em),
                         text = evidence.keyBinding.removePrefix("NumPad ")
                     )
-                    evidenceMap[evidence]?.let {
+
+                    selectedEvidences[evidence]?.let {
                         Checkbox(
                             checked = it,
                             onCheckedChange = null
@@ -102,26 +102,4 @@ class EvidenceList(val evidenceMap: SnapshotStateMap<Evidence, Boolean>) {
             )
         }
     }
-
-/* Loading from file with java.io API */
-
-    fun loadImageBitmap(file: File): ImageBitmap =
-        file.inputStream().buffered().use(::loadImageBitmap)
-
-    fun loadSvgPainter(file: File, density: Density): Painter =
-        file.inputStream().buffered().use { loadSvgPainter(it, density) }
-
-    fun loadXmlImageVector(file: File, density: Density): ImageVector =
-        file.inputStream().buffered().use { loadXmlImageVector(InputSource(it), density) }
-
-/* Loading from network with java.net API */
-
-    fun loadImageBitmap(url: String): ImageBitmap =
-        URL(url).openStream().buffered().use(::loadImageBitmap)
-
-    fun loadSvgPainter(url: String, density: Density): Painter =
-        URL(url).openStream().buffered().use { loadSvgPainter(it, density) }
-
-    fun loadXmlImageVector(url: String, density: Density): ImageVector =
-        URL(url).openStream().buffered().use { loadXmlImageVector(InputSource(it), density) }
 }

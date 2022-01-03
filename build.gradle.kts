@@ -35,6 +35,10 @@ compose.desktop {
     application {
         mainClass = "MainKt"
         nativeDistributions {
+            windows {
+                iconFile.set(project.file("icon.ico"))
+            }
+
             modules("java.instrument", "java.sql", "jdk.unsupported")
 
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
