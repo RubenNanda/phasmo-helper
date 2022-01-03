@@ -141,7 +141,7 @@ class Main : NativeKeyListener {
             "NumPad 0" -> {
                 windowState = windowState.next()
             }
-            "Enter" -> {
+            "NumPad Separator" -> {
                 openDialog = !openDialog
             }
             else -> println(key)

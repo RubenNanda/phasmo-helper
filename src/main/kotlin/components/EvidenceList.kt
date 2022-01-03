@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUnitApi::class)
+
 package components
 
 import androidx.compose.animation.AnimatedVisibility
@@ -13,6 +15,7 @@ import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.graphics.painter.Painter
@@ -22,6 +25,9 @@ import androidx.compose.ui.res.loadImageBitmap
 import androidx.compose.ui.res.loadSvgPainter
 import androidx.compose.ui.res.loadXmlImageVector
 import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.ExperimentalUnitApi
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.TextUnitType
 import data.json.model.Evidence
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -36,7 +42,11 @@ class EvidenceList(val evidenceMap: SnapshotStateMap<Evidence, Boolean>) {
         LazyColumn {
             items(evidenceMap.keys.toList().sortedBy { evidence -> evidence.keyBinding.removePrefix("NumPad ").toInt() }) { evidence ->
                 Row {
-                    Text(text = evidence.keyBinding.removePrefix("NumPad "))
+                    Text(
+                        color = Color.White,
+                        fontSize = TextUnit(1.0f, TextUnitType.Em),
+                        text = evidence.keyBinding.removePrefix("NumPad ")
+                    )
                     evidenceMap[evidence]?.let {
                         Checkbox(
                             checked = it,
@@ -51,7 +61,11 @@ class EvidenceList(val evidenceMap: SnapshotStateMap<Evidence, Boolean>) {
                     )
 
                     AnimatedVisibility(showName) {
-                        Text(text = evidence.displayName)
+                        Text(
+                            color = Color.White,
+                            fontSize = TextUnit(1.0f, TextUnitType.Em),
+                            text = evidence.displayName
+                        )
                     }
                 }
             }
