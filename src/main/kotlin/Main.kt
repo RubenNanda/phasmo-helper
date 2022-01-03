@@ -1,28 +1,30 @@
 // Copyright 2000-2021 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.desktop.ui.tooling.preview.Preview
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.snapshots.SnapshotStateMap
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.ExperimentalUnitApi
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.*
+import components.ConfirmGhostPopup
 import components.EvidenceList
 import components.GhostList
 import data.json.DataManager
@@ -37,6 +39,7 @@ import java.util.logging.Level
 import java.util.logging.Logger
 
 private var windowState: TriState by mutableStateOf(TriState.TRUE)
+private var openDialog: Boolean by mutableStateOf(false)
 
 private val ghosts = SnapshotStateList<Ghost>()
 
@@ -45,15 +48,19 @@ private val ghostChecker = mutableStateOf(GhostChecker(evidenceMap))
 
 private var evidenceList = EvidenceList(evidenceMap)
 private val ghostList = GhostList(ghosts, ghostChecker)
+private val confirmGhostPopup = ConfirmGhostPopup(ghosts)
 
+@Preview
+@OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 fun main() = application {
+    //TODO release focus when window is hidden
     Window(
         onCloseRequest = ::exitApplication,
         title = "Phasmophobia Helper",
         transparent = true,
         undecorated = true,
         alwaysOnTop = true,
-        state = WindowState(WindowPlacement.Floating, false, WindowPosition(0.dp, 0.dp), 300.dp, 470.dp),
+        state = WindowState(WindowPlacement.Floating, false, WindowPosition(0.dp, 0.dp), 330.dp, 470.dp),
         resizable = false,
     ) {
         val dataManager = DataManager()
@@ -65,6 +72,21 @@ fun main() = application {
         }
 
         Main().App()
+    }
+
+    //TODO release focus when window is hidden
+    Window(
+        onCloseRequest = { exitApplication() },
+        title = "Phasmophobia Helper",
+        transparent = true,
+        undecorated = true,
+        alwaysOnTop = true,
+        state = WindowState(WindowPlacement.Floating, false, WindowPosition(Alignment.Center), 450.dp, 450.dp),
+        resizable = false,
+    ) {
+        AnimatedVisibility(openDialog) {
+            confirmGhostPopup.build()
+        }
     }
 }
 
@@ -84,7 +106,10 @@ class Main : NativeKeyListener {
     }
 
     @Composable
-    @OptIn(ExperimentalUnitApi::class, ExperimentalComposeUiApi::class)
+    @OptIn(
+        ExperimentalUnitApi::class, ExperimentalComposeUiApi::class, ExperimentalMaterialApi::class,
+        ExperimentalFoundationApi::class
+    )
     fun content() {
         MaterialTheme {
             AnimatedVisibility(windowState != TriState.TRALSE) {
@@ -106,7 +131,6 @@ class Main : NativeKeyListener {
         val key = nativeKeyEvent?.paramString()?.let { getKeyFromParamString(it) }
         val evidenceMap = evidenceList.evidenceMap
 
-
         for(evidence in evidenceMap.keys){
             if(evidence.keyBinding == key){
                 evidenceMap[evidence] = !evidenceMap[evidence]!!
@@ -116,6 +140,9 @@ class Main : NativeKeyListener {
         when (key) {
             "NumPad 0" -> {
                 windowState = windowState.next()
+            }
+            "Enter" -> {
+                openDialog = !openDialog
             }
             else -> println(key)
         }
