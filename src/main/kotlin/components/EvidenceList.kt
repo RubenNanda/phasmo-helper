@@ -9,10 +9,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Checkbox
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.produceState
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,23 +28,24 @@ import androidx.compose.ui.unit.TextUnitType
 import data.json.model.Evidence
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import logic.GhostChecker
 import org.xml.sax.InputSource
 import java.io.File
 import java.io.IOException
 import java.net.URL
 
-class EvidenceList(val evidenceMap: SnapshotStateMap<Evidence, Boolean>) {
+class EvidenceList(private val ghostChecker: MutableState<GhostChecker>) {
     @Composable
     fun build(showName: Boolean) {
         LazyColumn {
-            items(evidenceMap.keys.toList().sortedBy { evidence -> evidence.keyBinding.removePrefix("NumPad ").toInt() }) { evidence ->
+            items(ghostChecker.component1().evidences.sortedBy { evidence -> evidence.keyBinding.removePrefix("NumPad ").toInt() }) { evidence ->
                 Row {
                     Text(
                         color = Color.White,
                         fontSize = TextUnit(1.0f, TextUnitType.Em),
                         text = evidence.keyBinding.removePrefix("NumPad ")
                     )
-                    evidenceMap[evidence]?.let {
+                    ghostChecker.component1().selectedEvidences[evidence]?.let {
                         Checkbox(
                             checked = it,
                             onCheckedChange = null

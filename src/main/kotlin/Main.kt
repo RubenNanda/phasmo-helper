@@ -38,16 +38,18 @@ import org.jnativehook.keyboard.NativeKeyListener
 import java.util.logging.Level
 import java.util.logging.Logger
 
+private var dataManager = DataManager()
+
 private var windowState: TriState by mutableStateOf(TriState.TRUE)
 private var openDialog: Boolean by mutableStateOf(false)
 
 private val ghosts = SnapshotStateList<Ghost>()
 
 private val evidenceMap: SnapshotStateMap<Evidence, Boolean> = SnapshotStateMap()
-private val ghostChecker = mutableStateOf(GhostChecker(evidenceMap))
+private val ghostChecker = mutableStateOf(GhostChecker(dataManager))
 
-private var evidenceList = EvidenceList(evidenceMap)
-private val ghostList = GhostList(ghosts, ghostChecker)
+private var evidenceList = EvidenceList(ghostChecker)
+private val ghostList = GhostList(ghostChecker)
 private val confirmGhostPopup = ConfirmGhostPopup(ghosts)
 
 @Preview
@@ -63,8 +65,6 @@ fun main() = application {
         state = WindowState(WindowPlacement.Floating, false, WindowPosition(0.dp, 0.dp), 330.dp, 470.dp),
         resizable = false,
     ) {
-        val dataManager = DataManager()
-
         ghosts.addAll(dataManager.getGhosts())
 
         dataManager.getEvidences().forEach { evidence ->
@@ -129,11 +129,11 @@ class Main : NativeKeyListener {
 
     override fun nativeKeyPressed(nativeKeyEvent: NativeKeyEvent?) {
         val key = nativeKeyEvent?.paramString()?.let { getKeyFromParamString(it) }
-        val evidenceMap = evidenceList.evidenceMap
+        val evidenceMap = ghostChecker.component1().selectedEvidences
 
         for(evidence in evidenceMap.keys){
             if(evidence.keyBinding == key){
-                evidenceMap[evidence] = !evidenceMap[evidence]!!
+                ghostChecker.component1().toggleEvidence(evidence)
             }
         }
 

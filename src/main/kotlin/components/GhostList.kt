@@ -18,10 +18,9 @@ import androidx.compose.ui.unit.ExperimentalUnitApi
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
-import data.json.model.Ghost
 import logic.GhostChecker
 
-class GhostList(private val ghostList: SnapshotStateList<Ghost>, private val ghostChecker: MutableState<GhostChecker>) {
+class GhostList(private val ghostChecker: MutableState<GhostChecker>) {
     @Composable
     fun build(visible: Boolean) {
         AnimatedVisibility(visible) {
@@ -33,8 +32,9 @@ class GhostList(private val ghostList: SnapshotStateList<Ghost>, private val gho
                 )
 
                 LazyColumn {
-                    items(ghostList) {
-                        AnimatedVisibility(ghostChecker.component1().check(it)) {
+                    items(ghostChecker.component1().ghosts) {
+                        println("${ghostChecker.component1().availableGhosts}")
+                        AnimatedVisibility(ghostChecker.component1().availableGhosts.contains(it)) {
                             Text(
                                 color = Color.White,
                                 fontSize = TextUnit(1.0f, TextUnitType.Em),
