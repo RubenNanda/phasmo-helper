@@ -1,11 +1,10 @@
-// Copyright 2000-2021 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
+@file:OptIn(ExperimentalUnitApi::class)
+
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.desktop.ui.tooling.preview.Preview
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
@@ -14,13 +13,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.snapshots.SnapshotStateMap
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.ExperimentalUnitApi
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.*
@@ -31,29 +25,31 @@ import data.json.DataManager
 import data.json.model.Evidence
 import data.json.model.Ghost
 import data.structures.TriState
-import logic.GhostChecker
+import logic.Resolver
 import org.jnativehook.GlobalScreen
 import org.jnativehook.keyboard.NativeKeyEvent
 import org.jnativehook.keyboard.NativeKeyListener
 import java.util.logging.Level
 import java.util.logging.Logger
 
-private var dataManager = DataManager()
-
 private var windowState: TriState by mutableStateOf(TriState.TRUE)
 private var openDialog: Boolean by mutableStateOf(false)
 
+private var evidenceList = EvidenceList()
+private val ghostList = GhostList()
+private val confirmGhostPopup = ConfirmGhostPopup()
+
 private val ghosts = SnapshotStateList<Ghost>()
+private val evidences = SnapshotStateList<Evidence>()
+private val selectedEvidences = SnapshotStateMap<Evidence, Boolean>()
+private var availableGhosts = SnapshotStateList<Ghost>()
+private val availableEvidences = SnapshotStateList<Evidence>()
 
-private val evidenceMap: SnapshotStateMap<Evidence, Boolean> = SnapshotStateMap()
-private val ghostChecker = mutableStateOf(GhostChecker(dataManager))
-
-private var evidenceList = EvidenceList(ghostChecker)
-private val ghostList = GhostList(ghostChecker)
-private val confirmGhostPopup = ConfirmGhostPopup(ghosts)
+private var dataManager = DataManager()
+private val resolver =
+    mutableStateOf(Resolver(dataManager, ghosts, evidences, selectedEvidences, availableGhosts, availableEvidences))
 
 @Preview
-@OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 fun main() = application {
     //TODO release focus when window is hidden
     Window(
@@ -65,16 +61,11 @@ fun main() = application {
         state = WindowState(WindowPlacement.Floating, false, WindowPosition(0.dp, 0.dp), 330.dp, 470.dp),
         resizable = false,
     ) {
-        ghosts.addAll(dataManager.getGhosts())
-
-        dataManager.getEvidences().forEach { evidence ->
-            evidenceMap[evidence] = false
-        }
-
         Main().App()
     }
 
     //TODO release focus when window is hidden
+    /*
     Window(
         onCloseRequest = { exitApplication() },
         title = "Phasmophobia Helper",
@@ -88,6 +79,8 @@ fun main() = application {
             confirmGhostPopup.build()
         }
     }
+
+     */
 }
 
 class Main : NativeKeyListener {
@@ -106,21 +99,17 @@ class Main : NativeKeyListener {
     }
 
     @Composable
-    @OptIn(
-        ExperimentalUnitApi::class, ExperimentalComposeUiApi::class, ExperimentalMaterialApi::class,
-        ExperimentalFoundationApi::class
-    )
     fun content() {
         MaterialTheme {
             AnimatedVisibility(windowState != TriState.TRALSE) {
                 Surface(
-                    modifier = Modifier.padding(15.dp).shadow(3.dp, RoundedCornerShape(20.dp)),
+                    modifier = Modifier.padding(15.dp),
                     color = Color(55, 55, 55, 180),
                     shape = RoundedCornerShape(20.dp)
                 ) {
                     Column(modifier = Modifier.padding(15.dp)) {
-                        evidenceList.build(windowState == TriState.TRUE)
-                        ghostList.build(windowState == TriState.TRUE)
+                        evidenceList.build(windowState == TriState.TRUE, selectedEvidences, availableEvidences)
+                        ghostList.build(windowState == TriState.TRUE, ghosts, availableGhosts)
                     }
                 }
             }
@@ -129,11 +118,11 @@ class Main : NativeKeyListener {
 
     override fun nativeKeyPressed(nativeKeyEvent: NativeKeyEvent?) {
         val key = nativeKeyEvent?.paramString()?.let { getKeyFromParamString(it) }
-        val evidenceMap = ghostChecker.component1().selectedEvidences
 
-        for(evidence in evidenceMap.keys){
-            if(evidence.keyBinding == key){
-                ghostChecker.component1().toggleEvidence(evidence)
+        for (evidence in selectedEvidences.keys) {
+            if (evidence.keyBinding == key) {
+                selectedEvidences[evidence] = !selectedEvidences[evidence]!!
+                resolver.value.update()
             }
         }
 

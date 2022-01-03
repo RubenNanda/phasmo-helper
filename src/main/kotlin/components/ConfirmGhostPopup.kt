@@ -1,10 +1,11 @@
+@file:OptIn(ExperimentalUnitApi::class)
+
 package components
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.Card
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -19,16 +20,15 @@ import androidx.compose.ui.unit.dp
 import data.json.model.Ghost
 import kotlin.math.roundToInt
 
-class ConfirmGhostPopup(private val ghostList: SnapshotStateList<Ghost>) {
-    @OptIn(ExperimentalMaterialApi::class, ExperimentalUnitApi::class)
+class ConfirmGhostPopup() {
     @Composable
-    fun build() {
+    fun build(ghosts: SnapshotStateList<Ghost>) {
         Card(
             modifier = Modifier.fillMaxWidth().shadow(3.dp, RoundedCornerShape(20.dp)),
             backgroundColor = Color(55, 55, 55, 180),
         ) {
             val rowSize = 3
-            val itemCount = ghostList.size
+            val itemCount = ghosts.size
             val columnCount = (itemCount.toDouble() / rowSize).roundToInt()
             Column(modifier = Modifier.padding(15.dp)) {
                 Text(
@@ -48,7 +48,7 @@ class ConfirmGhostPopup(private val ghostList: SnapshotStateList<Ghost>) {
                                 onClick = {
 
                                 }) {
-                                Text(ghostList[index].displayName)
+                                Text(ghosts.toMutableList()[index].displayName)
                             }
                         }
                     }
