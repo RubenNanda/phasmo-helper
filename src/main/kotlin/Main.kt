@@ -33,6 +33,7 @@ import java.util.logging.Level
 import java.util.logging.Logger
 
 private var windowState: TriState by mutableStateOf(TriState.TRUE)
+private var showTips: Boolean by mutableStateOf(false)
 private var openDialog: Boolean by mutableStateOf(false)
 
 private var evidenceList = EvidenceList()
@@ -58,7 +59,7 @@ fun main() = application {
         transparent = true,
         undecorated = true,
         alwaysOnTop = true,
-        state = WindowState(WindowPlacement.Floating, false, WindowPosition(0.dp, 0.dp), 330.dp, 470.dp),
+        state = WindowState(WindowPlacement.Floating, false, WindowPosition(0.dp, 0.dp), 400.dp, 600.dp),
         resizable = false,
     ) {
         Main().App()
@@ -109,7 +110,7 @@ class Main : NativeKeyListener {
                 ) {
                     Column(modifier = Modifier.padding(15.dp)) {
                         evidenceList.build(windowState == TriState.TRUE, selectedEvidences, availableEvidences)
-                        ghostList.build(windowState == TriState.TRUE, ghosts, availableGhosts)
+                        ghostList.build(windowState == TriState.TRUE, showTips, ghosts, availableGhosts)
                     }
                 }
             }
@@ -131,7 +132,7 @@ class Main : NativeKeyListener {
                 windowState = windowState.next()
             }
             "NumPad Separator" -> {
-                openDialog = !openDialog
+                showTips = !showTips
             }
             else -> println(key)
         }

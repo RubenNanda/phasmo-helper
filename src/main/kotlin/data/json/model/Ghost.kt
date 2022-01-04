@@ -8,4 +8,5 @@ data class Ghost(
     var description: String,
     var strength: String,
     var weakness: String,
+    var tips: String
 )
