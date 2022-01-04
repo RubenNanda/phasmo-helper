@@ -30,6 +30,7 @@ import kotlinx.coroutines.withContext
 import java.io.IOException
 
 class EvidenceList() {
+    @OptIn(ExperimentalUnitApi::class)
     @Composable
     fun build(
         showName: Boolean,
@@ -42,7 +43,7 @@ class EvidenceList() {
             }) { evidence ->
                 Row {
                     Text(
-                        color = Color.White,
+                        color = if (availableEvidences.contains(evidence)) Color.Red else Color.White,
                         fontSize = TextUnit(1.0f, TextUnitType.Em),
                         text = evidence.keyBinding.removePrefix("NumPad ")
                     )
@@ -62,7 +63,7 @@ class EvidenceList() {
 
                     AnimatedVisibility(showName) {
                         Text(
-                            color = Color.White,
+                            color = if (availableEvidences.contains(evidence)) Color.Red else Color.White,
                             fontSize = TextUnit(1.0f, TextUnitType.Em),
                             text = evidence.displayName
                         )
@@ -85,8 +86,6 @@ class EvidenceList() {
                 try {
                     load()
                 } catch (e: IOException) {
-                    // instead of printing to console, you can also write this to log,
-                    // or show some error placeholder
                     e.printStackTrace()
                     null
                 }
