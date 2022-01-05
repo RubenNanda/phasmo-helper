@@ -34,18 +34,19 @@ tasks.withType<KotlinCompile>() {
 compose.desktop {
     application {
         mainClass = "MainKt"
+
         nativeDistributions {
             windows {
-                iconFile.set(project.file("icon.ico"))
+                iconFile.set(project.file("src/main/resources/assets/icons/program/phasmo-helper.ico"))
+
+                modules("java.instrument", "java.sql", "jdk.unsupported")
+
+                targetFormats(TargetFormat.Msi)
+                packageName = "phasmo-helper"
+                packageVersion = "1.0.0"
+
+                appResourcesRootDir.set(project.layout.projectDirectory.dir("resources"))
             }
-
-            modules("java.instrument", "java.sql", "jdk.unsupported")
-
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "phasmo-helper"
-            packageVersion = "1.0.0"
-
-            appResourcesRootDir.set(project.layout.projectDirectory.dir("resources"))
         }
     }
 }
