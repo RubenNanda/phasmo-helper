@@ -10,17 +10,13 @@ class Resolver(
     dataManager: DataManager,
     private val ghosts: SnapshotStateList<Ghost>,
     private val evidences: SnapshotStateList<Evidence>,
-    private val selectedEvidences: SnapshotStateMap<Evidence, Boolean>,
+    private val selectedEvidences: SnapshotStateList<Evidence>,
     private var availableGhosts: SnapshotStateList<Ghost>,
     private val availableEvidences: SnapshotStateList<Evidence>
 ) {
     init {
         ghosts.addAll(dataManager.getGhosts())
         evidences.addAll(dataManager.getEvidences())
-
-        for (evidence in evidences) {
-            selectedEvidences[evidence] = false
-        }
     }
 
     fun clearEvidences() {
@@ -41,7 +37,7 @@ class Resolver(
             ghostEvidence.add(getEvidenceFromString(ghost.evidenceThree))
 
             for (evidence in evidences) {
-                val isEvidence = selectedEvidences[evidence]
+                val isEvidence = selectedEvidences.contains(evidence)
                 if (isEvidence == true) checkAllFalse = false
                 if (isEvidence == true && !ghostEvidence.contains(evidence)) {
                     removeGhosts.add(ghost)
