@@ -23,6 +23,13 @@ class Resolver(
         }
     }
 
+    fun clearEvidences() {
+        for (evidence in evidences) {
+            selectedEvidences[evidence] = false
+        }
+        update()
+    }
+
     fun update() {
         val removeGhosts: MutableSet<Ghost> = mutableSetOf()
         var checkAllFalse = true
