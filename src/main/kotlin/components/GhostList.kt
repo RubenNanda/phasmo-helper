@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import data.json.model.Ghost
 
-class GhostList() {
+class GhostList {
     @Composable
     fun build(
         showGhosts: Boolean,
@@ -31,7 +31,7 @@ class GhostList() {
     ) {
         AnimatedVisibility(showGhosts) {
             Column(modifier = Modifier.padding(0.dp, 15.dp)) {
-                AnimatedVisibility(availableGhosts.isNotEmpty()){
+                AnimatedVisibility(availableGhosts.isNotEmpty()) {
                     Text(
                         color = MaterialTheme.colors.onSurface,
                         fontSize = TextUnit(1.0f, TextUnitType.Em),
@@ -55,7 +55,7 @@ class GhostList() {
                                 )
                                 AnimatedVisibility(showTips) {
                                     var text = it.tips
-                                    if(text == ""){
+                                    if (text == "") {
                                         text = it.weakness
                                     }
 

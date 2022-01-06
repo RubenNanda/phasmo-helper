@@ -32,7 +32,7 @@ import java.util.logging.Level
 import java.util.logging.Logger
 
 private var windowState: TriState by mutableStateOf(TriState.TRUE)
-private var showTips: Boolean by mutableStateOf(false)
+private var showTips: Boolean by mutableStateOf(true)
 //private var openDialog: Boolean by mutableStateOf(false)
 
 private var evidenceList = EvidenceList()
@@ -51,7 +51,8 @@ private val resolver =
 
 @Preview
 fun main() = application {
-    val icon = BitmapPainter(loadImageBitmap(javaClass.classLoader.getResourceAsStream("assets/icons/program/phasmo-helper.ico")))
+    val icon =
+        BitmapPainter(loadImageBitmap(javaClass.classLoader.getResourceAsStream("assets/icons/program/phasmo-helper.ico")))
 
     //TODO release focus when window is hidden
     Window(
@@ -110,7 +111,12 @@ class Main : NativeKeyListener {
                     shape = RoundedCornerShape(20.dp)
                 ) {
                     Column(modifier = Modifier.padding(15.dp)) {
-                        evidenceList.build(windowState == TriState.TRUE, evidences, selectedEvidences, availableEvidences)
+                        evidenceList.build(
+                            windowState == TriState.TRUE,
+                            evidences,
+                            selectedEvidences,
+                            availableEvidences
+                        )
                         ghostList.build(
                             windowState == TriState.TRUE,
                             (showTips && selectedEvidences.size >= 2),

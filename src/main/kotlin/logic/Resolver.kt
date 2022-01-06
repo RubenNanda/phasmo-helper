@@ -1,7 +1,6 @@
 package logic
 
 import androidx.compose.runtime.snapshots.SnapshotStateList
-import androidx.compose.runtime.snapshots.SnapshotStateMap
 import data.json.DataManager
 import data.json.model.Evidence
 import data.json.model.Ghost
@@ -20,9 +19,7 @@ class Resolver(
     }
 
     fun clearEvidences() {
-        for (evidence in evidences) {
-            selectedEvidences[evidence] = false
-        }
+        selectedEvidences.clear()
         update()
     }
 

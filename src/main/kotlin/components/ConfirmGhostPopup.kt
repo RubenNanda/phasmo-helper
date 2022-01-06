@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import data.json.model.Ghost
 import kotlin.math.roundToInt
 
-class ConfirmGhostPopup() {
+class ConfirmGhostPopup {
     @Composable
     fun build(ghosts: SnapshotStateList<Ghost>) {
         Card(

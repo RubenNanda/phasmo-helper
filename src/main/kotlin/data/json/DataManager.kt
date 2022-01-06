@@ -1,6 +1,5 @@
 package data.json
 
-import Main
 import com.google.gson.Gson
 import data.json.model.Evidence
 import data.json.model.EvidenceHelperList
@@ -39,7 +38,7 @@ class DataManager {
     fun getGhosts(): List<Ghost> {
         val file = loadFile(File.GHOST)
 
-        if(file is GhostHelperList){
+        if (file is GhostHelperList) {
             return file.ghostList
         }
 
@@ -49,7 +48,7 @@ class DataManager {
     fun getEvidences(): List<Evidence> {
         val file = loadFile(File.EVIDENCE)
 
-        if(file is EvidenceHelperList){
+        if (file is EvidenceHelperList) {
             return file.evidenceList
         }
 
