@@ -142,6 +142,9 @@ class Main : NativeKeyListener {
             "NumPad Separator" -> {
                 showTips = !showTips
             }
+            "NumPad Subtract" -> {
+                resolver.component1().clearEvidences()
+            }
             else -> println(key)
         }
     }
