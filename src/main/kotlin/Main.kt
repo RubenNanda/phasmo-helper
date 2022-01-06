@@ -7,7 +7,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Modifier
@@ -17,30 +20,26 @@ import androidx.compose.ui.res.loadImageBitmap
 import androidx.compose.ui.unit.ExperimentalUnitApi
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.*
-import components.ConfirmGhostPopup
 import components.EvidenceList
 import components.GhostList
 import data.json.DataManager
 import data.json.model.Evidence
 import data.json.model.Ghost
 import data.structures.TriState
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import logic.Resolver
 import org.jnativehook.GlobalScreen
 import org.jnativehook.keyboard.NativeKeyEvent
 import org.jnativehook.keyboard.NativeKeyListener
-import java.io.IOException
 import java.util.logging.Level
 import java.util.logging.Logger
 
 private var windowState: TriState by mutableStateOf(TriState.TRUE)
 private var showTips: Boolean by mutableStateOf(false)
-private var openDialog: Boolean by mutableStateOf(false)
+//private var openDialog: Boolean by mutableStateOf(false)
 
 private var evidenceList = EvidenceList()
 private val ghostList = GhostList()
-private val confirmGhostPopup = ConfirmGhostPopup()
+//private val confirmGhostPopup = ConfirmGhostPopup()
 
 private val ghosts = SnapshotStateList<Ghost>()
 private val evidences = SnapshotStateList<Evidence>()
@@ -114,7 +113,12 @@ class Main : NativeKeyListener {
                 ) {
                     Column(modifier = Modifier.padding(15.dp)) {
                         evidenceList.build(windowState == TriState.TRUE, selectedEvidences, availableEvidences)
-                        ghostList.build(windowState == TriState.TRUE, showTips, ghosts, availableGhosts)
+                        ghostList.build(
+                            windowState == TriState.TRUE,
+                            (showTips && availableEvidences.size >= 2),
+                            ghosts,
+                            availableGhosts
+                        )
                     }
                 }
             }
