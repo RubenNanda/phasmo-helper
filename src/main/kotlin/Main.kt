@@ -5,16 +5,13 @@ import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
-import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.res.loadImageBitmap
 import androidx.compose.ui.unit.ExperimentalUnitApi
@@ -30,6 +27,7 @@ import logic.Resolver
 import org.jnativehook.GlobalScreen
 import org.jnativehook.keyboard.NativeKeyEvent
 import org.jnativehook.keyboard.NativeKeyListener
+import theme.AppTheme
 import java.util.logging.Level
 import java.util.logging.Logger
 
@@ -43,7 +41,7 @@ private val ghostList = GhostList()
 
 private val ghosts = SnapshotStateList<Ghost>()
 private val evidences = SnapshotStateList<Evidence>()
-private val selectedEvidences = SnapshotStateMap<Evidence, Boolean>()
+private val selectedEvidences = SnapshotStateList<Evidence>()
 private var availableGhosts = SnapshotStateList<Ghost>()
 private val availableEvidences = SnapshotStateList<Evidence>()
 
@@ -104,18 +102,18 @@ class Main : NativeKeyListener {
 
     @Composable
     fun content() {
-        MaterialTheme {
+        AppTheme(useDarkTheme = true) {
+
             AnimatedVisibility(windowState != TriState.TRALSE) {
                 Surface(
                     modifier = Modifier.padding(15.dp),
-                    color = Color(55, 55, 55, 180),
                     shape = RoundedCornerShape(20.dp)
                 ) {
                     Column(modifier = Modifier.padding(15.dp)) {
-                        evidenceList.build(windowState == TriState.TRUE, selectedEvidences, availableEvidences)
+                        evidenceList.build(windowState == TriState.TRUE, evidences, selectedEvidences, availableEvidences)
                         ghostList.build(
                             windowState == TriState.TRUE,
-                            (showTips && availableEvidences.size >= 2),
+                            (showTips && selectedEvidences.size >= 2),
                             ghosts,
                             availableGhosts
                         )
@@ -128,9 +126,13 @@ class Main : NativeKeyListener {
     override fun nativeKeyPressed(nativeKeyEvent: NativeKeyEvent?) {
         val key = nativeKeyEvent?.paramString()?.let { getKeyFromParamString(it) }
 
-        for (evidence in selectedEvidences.keys) {
+        for (evidence in evidences) {
             if (evidence.keyBinding == key) {
-                selectedEvidences[evidence] = !selectedEvidences[evidence]!!
+                if (selectedEvidences.contains(evidence)) {
+                    selectedEvidences.remove(evidence)
+                } else {
+                    selectedEvidences.add(evidence)
+                }
                 resolver.value.update()
             }
         }
