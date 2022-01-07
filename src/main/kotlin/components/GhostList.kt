@@ -70,11 +70,13 @@ class GhostList {
                                     }
 
                                     Column {
-                                        Text(
-                                            color = Color.LightGray,
-                                            fontSize = TextUnit(1.0f, TextUnitType.Em),
-                                            text = remainingEvidences
-                                        )
+                                        if(remainingEvidences != "•"){
+                                            Text(
+                                                color = Color.LightGray,
+                                                fontSize = TextUnit(1.0f, TextUnitType.Em),
+                                                text = remainingEvidences
+                                            )
+                                        }
 
                                         Text(
                                             color = Color.LightGray,
