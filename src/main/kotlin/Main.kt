@@ -2,10 +2,7 @@
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.desktop.ui.tooling.preview.Preview
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Surface
@@ -16,7 +13,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.res.loadImageBitmap
 import androidx.compose.ui.unit.ExperimentalUnitApi
@@ -76,10 +72,7 @@ fun main() = application {
             WindowPlacement.Floating, isMinimized, WindowPosition(0.dp, 0.dp), 400.dp, 600.dp
         ),
     ) {
-        Box(modifier = Modifier.fillMaxSize().background(color = Color.Black)) {
-            Main().App()
-        }
-
+        Main().App()
     }
 
     //TODO release focus when window is hidden
