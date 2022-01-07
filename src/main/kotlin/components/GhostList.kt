@@ -20,10 +20,12 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import data.json.model.Ghost
+import logic.Resolver
 
 class GhostList {
     @Composable
     fun build(
+        resolver: Resolver,
         showGhosts: Boolean,
         showTips: Boolean,
         ghosts: SnapshotStateList<Ghost>,
@@ -54,16 +56,32 @@ class GhostList {
                                     text = it.displayName
                                 )
                                 AnimatedVisibility(showTips) {
+                                    var remainingEvidences = "•"
+
+                                    for (evidence in resolver.getRemainingGhostEvidences(it)) {
+                                        remainingEvidences += " ${evidence.displayName} and"
+                                    }
+
+                                    remainingEvidences = remainingEvidences.removeSuffix("and")
+
                                     var text = it.tips
                                     if (text == "") {
                                         text = it.weakness
                                     }
 
-                                    Text(
-                                        color = Color.LightGray,
-                                        fontSize = TextUnit(1.0f, TextUnitType.Em),
-                                        text = "• $text"
-                                    )
+                                    Column {
+                                        Text(
+                                            color = Color.LightGray,
+                                            fontSize = TextUnit(1.0f, TextUnitType.Em),
+                                            text = remainingEvidences
+                                        )
+
+                                        Text(
+                                            color = Color.LightGray,
+                                            fontSize = TextUnit(1.0f, TextUnitType.Em),
+                                            text = "• $text"
+                                        )
+                                    }
                                 }
                             }
                         }

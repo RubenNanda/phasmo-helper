@@ -56,8 +56,7 @@ private var availableGhosts = SnapshotStateList<Ghost>()
 private val availableEvidences = SnapshotStateList<Evidence>()
 
 private var dataManager = DataManager()
-private val resolver =
-    mutableStateOf(Resolver(dataManager, ghosts, evidences, selectedEvidences, availableGhosts, availableEvidences))
+private val resolver = Resolver(dataManager, ghosts, evidences, selectedEvidences, availableGhosts, availableEvidences)
 
 @Preview
 fun main() = application {
@@ -118,8 +117,7 @@ class Main : NativeKeyListener {
 
     @Composable
     fun content() {
-        AppTheme(true) {
-
+        AppTheme(useDarkTheme = true) {
             AnimatedVisibility(windowState != TriState.TRALSE) {
                 Surface(
                     modifier = Modifier.padding(15.dp),
@@ -135,6 +133,7 @@ class Main : NativeKeyListener {
                             availableEvidences
                         )
                         ghostList.build(
+                            resolver,
                             windowState == TriState.TRUE,
                             (showTips && selectedEvidences.size >= 2),
                             ghosts,
@@ -156,7 +155,7 @@ class Main : NativeKeyListener {
                 } else {
                     selectedEvidences.add(evidence)
                 }
-                resolver.value.update()
+                resolver.update()
             }
         }
 
@@ -177,7 +176,7 @@ class Main : NativeKeyListener {
                 showTips = !showTips
             }
             "NumPad Subtract" -> {
-                resolver.component1().clearEvidences()
+                resolver.clearEvidences()
             }
             else -> println(key)
         }

@@ -63,11 +63,27 @@ class Resolver(
         }
     }
 
-    private fun getEvidenceFromString(input: String): Evidence {
+    fun getEvidenceFromString(input: String): Evidence {
         for (evidence in evidences) {
             if (evidence.displayName == input) return evidence
         }
 
         throw Exception("Evidence $input not found")
+    }
+
+    fun getGhostEvidences(ghost: Ghost): Set<Evidence> {
+        val evidences = mutableSetOf<Evidence>()
+        evidences.add(getEvidenceFromString(ghost.evidenceOne))
+        evidences.add(getEvidenceFromString(ghost.evidenceTwo))
+        evidences.add(getEvidenceFromString(ghost.evidenceThree))
+        return evidences
+    }
+
+    fun getRemainingGhostEvidences(ghost: Ghost): Set<Evidence> {
+        val evidences = getGhostEvidences(ghost).toMutableSet()
+        for (evidence in selectedEvidences) {
+            evidences.remove(evidence)
+        }
+        return evidences
     }
 }
