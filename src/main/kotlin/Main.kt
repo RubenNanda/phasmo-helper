@@ -1,17 +1,22 @@
-@file:OptIn(ExperimentalUnitApi::class)
+@file:OptIn(ExperimentalUnitApi::class, DelicateCoroutinesApi::class)
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.desktop.ui.tooling.preview.Preview
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Surface
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.res.loadImageBitmap
 import androidx.compose.ui.unit.ExperimentalUnitApi
@@ -23,6 +28,10 @@ import data.json.DataManager
 import data.json.model.Evidence
 import data.json.model.Ghost
 import data.structures.TriState
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import logic.Resolver
 import org.jnativehook.GlobalScreen
 import org.jnativehook.keyboard.NativeKeyEvent
@@ -32,6 +41,7 @@ import java.util.logging.Level
 import java.util.logging.Logger
 
 private var windowState: TriState by mutableStateOf(TriState.TRUE)
+private var isMinimized: Boolean by mutableStateOf(false)
 private var showTips: Boolean by mutableStateOf(true)
 //private var openDialog: Boolean by mutableStateOf(false)
 
@@ -63,9 +73,14 @@ fun main() = application {
         alwaysOnTop = true,
         resizable = false,
         icon = icon,
-        state = WindowState(WindowPlacement.Floating, false, WindowPosition(0.dp, 0.dp), 400.dp, 600.dp),
+        state = WindowState(
+            WindowPlacement.Floating, isMinimized, WindowPosition(0.dp, 0.dp), 400.dp, 600.dp
+        ),
     ) {
-        Main().App()
+        Box(modifier = Modifier.fillMaxSize().background(color = Color.Black)) {
+            Main().App()
+        }
+
     }
 
     //TODO release focus when window is hidden
@@ -103,13 +118,15 @@ class Main : NativeKeyListener {
 
     @Composable
     fun content() {
-        AppTheme(useDarkTheme = true) {
+        AppTheme(true) {
 
             AnimatedVisibility(windowState != TriState.TRALSE) {
                 Surface(
                     modifier = Modifier.padding(15.dp),
                     shape = RoundedCornerShape(20.dp)
                 ) {
+                    Text(text = "")
+
                     Column(modifier = Modifier.padding(15.dp)) {
                         evidenceList.build(
                             windowState == TriState.TRUE,
@@ -146,6 +163,15 @@ class Main : NativeKeyListener {
         when (key) {
             "NumPad 0" -> {
                 windowState = windowState.next()
+
+                if (windowState == TriState.TRALSE) {
+                    GlobalScope.async {
+                        delay(250)
+                        isMinimized = true
+                    }
+                } else if (windowState == TriState.TRUE) {
+                    isMinimized = false
+                }
             }
             "NumPad Separator" -> {
                 showTips = !showTips
