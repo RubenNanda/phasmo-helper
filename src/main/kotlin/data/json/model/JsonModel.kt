@@ -1,4 +1,3 @@
 package data.json.model
 
-interface JsonModel {
-}
+interface JsonModel

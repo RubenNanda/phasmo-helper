@@ -39,7 +39,7 @@ class ConfirmGhostPopup {
                 )
 
                 for (y in 0 until columnCount) {
-                    Row() {
+                    Row {
                         for (x in 0 until rowSize) {
                             val index = y * rowSize + x
 

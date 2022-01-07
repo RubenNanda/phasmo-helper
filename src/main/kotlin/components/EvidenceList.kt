@@ -49,7 +49,7 @@ class EvidenceList {
                         text = evidence.keyBinding.removePrefix("NumPad ")
                     )
 
-                    selectedEvidences.contains(evidence)?.let {
+                    selectedEvidences.contains(evidence).let {
                         Checkbox(
                             colors = CheckboxDefaults.colors(
                                 uncheckedColor = if (availableEvidences.contains(evidence)) MaterialTheme.colors.error else MaterialTheme.colors.onSurface,
