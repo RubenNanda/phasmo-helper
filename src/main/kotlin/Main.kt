@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.graphics.painter.Painter
@@ -22,6 +23,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import logic.KeyListener
 import logic.Resolver
+import windows.journal.Journal
 import windows.popup.Popup
 import java.io.IOException
 
@@ -34,11 +36,12 @@ private val availableEvidences = SnapshotStateList<Evidence>()
 private var dataManager = DataManager()
 private val resolver = Resolver(dataManager, ghosts, evidences, selectedEvidences, availableGhosts, availableEvidences)
 private var popup = Popup(resolver, ghosts, evidences, selectedEvidences, availableGhosts, availableEvidences)
+private val journal = Journal()
 
 //Needs to be declared here even though value is never accessed.
 //Initializing in main causes multiple instances to be created.
 @Suppress("Unused")
-val keyListener = KeyListener(resolver, popup, evidences, selectedEvidences)
+val keyListener = KeyListener(resolver, popup, journal,  evidences, selectedEvidences)
 
 @Preview
 fun main() = application {
@@ -60,19 +63,18 @@ fun main() = application {
         popup.content()
     }
 
-    /*
     Window(
         onCloseRequest = { exitApplication() },
-        title = "Phasmophobia Helper",
+        title = "Phasmophobia Journal",
         transparent = true,
         undecorated = true,
         alwaysOnTop = true,
-        state = WindowState(WindowPlacement.Floating, false, WindowPosition(Alignment.Center), 450.dp, 450.dp),
         resizable = false,
+        icon = icon,
+        state = WindowState(WindowPlacement.Floating, journal.isMinimized, WindowPosition(Alignment.Center), 600.dp, 600.dp),
     ) {
-
+        journal.content()
     }
-     */
 }
 
 @Composable

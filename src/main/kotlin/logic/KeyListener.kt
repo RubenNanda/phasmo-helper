@@ -12,6 +12,7 @@ import kotlinx.coroutines.delay
 import org.jnativehook.GlobalScreen
 import org.jnativehook.keyboard.NativeKeyEvent
 import org.jnativehook.keyboard.NativeKeyListener
+import windows.journal.Journal
 import windows.popup.Popup
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -19,6 +20,7 @@ import java.util.logging.Logger
 class KeyListener(
     private val resolver: Resolver,
     private val popup: Popup,
+    private val journal: Journal,
     private val evidences: SnapshotStateList<Evidence>,
     private val selectedEvidences: SnapshotStateList<Evidence>,
 ) : NativeKeyListener {
@@ -63,6 +65,18 @@ class KeyListener(
             }
             "NumPad Subtract" -> {
                 resolver.clearEvidences()
+            }
+            "NumPad Add" -> {
+                journal.windowState = !journal.windowState
+
+                if (journal.windowState) {
+                    journal.isMinimized = false
+                } else {
+                    GlobalScope.async {
+                        delay(300)
+                        journal.isMinimized = true
+                    }
+                }
             }
             else -> println(key)
         }

@@ -29,8 +29,8 @@ class Popup(
     private var availableGhosts: SnapshotStateList<Ghost>,
     private val availableEvidences: SnapshotStateList<Evidence>,
 ) {
-    var isMinimized: Boolean by mutableStateOf(false)
     var windowState: TriState by mutableStateOf(TriState.TRUE)
+    var isMinimized: Boolean by mutableStateOf(false)
     var showTips: Boolean by mutableStateOf(true)
 
     private val evidenceList = EvidenceList()
