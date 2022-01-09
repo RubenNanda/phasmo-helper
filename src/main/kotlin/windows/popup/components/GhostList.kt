@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalUnitApi::class)
 
-package components
+package windows.popup.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
