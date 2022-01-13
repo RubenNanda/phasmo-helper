@@ -2,7 +2,6 @@
 
 package windows.popup.components
 
-import AsyncImage
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.lazy.LazyColumn
@@ -19,6 +18,7 @@ import androidx.compose.ui.res.loadImageBitmap
 import androidx.compose.ui.unit.ExperimentalUnitApi
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
+import components.AsyncImage
 import data.json.model.Evidence
 
 class EvidenceList {

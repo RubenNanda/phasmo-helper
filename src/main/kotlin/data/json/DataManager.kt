@@ -1,25 +1,22 @@
 package data.json
 
 import com.google.gson.Gson
-import data.json.model.Evidence
-import data.json.model.EvidenceHelperList
-import data.json.model.Ghost
-import data.json.model.GhostHelperList
+import data.json.model.*
 import java.io.File
 import java.lang.reflect.Type
 
 class DataManager {
+    private val gson = Gson()
 
     enum class File(val filePath: String, val type: Type) {
         GHOST("assets/json/ghost.json", GhostHelperList::class.java),
-        EVIDENCE("assets/json/evidence.json", EvidenceHelperList::class.java);
+        EVIDENCE("assets/json/evidence.json", EvidenceHelperList::class.java),
+        EQUIPMENT("assets/json/equipment.json", EquipmentList::class.java);
     }
-
-    private val gson = Gson()
 
     /*
     fun saveFile(outputFile: File, any: Any) {
-        val file = File(Main::class.java.classLoader.getResource(outputFile.filePath).path)
+        val file = File(this::class.java.classLoader.getResource(outputFile.filePath).path)
 
         if (!file.exists()) {
             file.parentFile.mkdirs()
@@ -27,6 +24,7 @@ class DataManager {
         }
         println(file.absolutePath)
 
+        println(gson.toJson(any))
         file.bufferedWriter().use { out -> out.write(gson.toJson(any)) }
     }
      */
@@ -50,6 +48,16 @@ class DataManager {
 
         if (file is EvidenceHelperList) {
             return file.evidenceList
+        }
+
+        throw Exception("Not sure how you did this")
+    }
+
+    fun getEquipment(): List<Equipment> {
+        val file = loadFile(File.EQUIPMENT)
+
+        if (file is EquipmentList) {
+            return file.equipmentList
         }
 
         throw Exception("Not sure how you did this")

@@ -1,16 +1,9 @@
 @file:OptIn(ExperimentalUnitApi::class, DelicateCoroutinesApi::class)
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
-import androidx.compose.foundation.Image
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.produceState
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.BitmapPainter
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.loadImageBitmap
 import androidx.compose.ui.unit.ExperimentalUnitApi
 import androidx.compose.ui.unit.dp
@@ -19,13 +12,10 @@ import data.json.DataManager
 import data.json.model.Evidence
 import data.json.model.Ghost
 import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import logic.KeyListener
 import logic.Resolver
 import windows.journal.Journal
 import windows.popup.Popup
-import java.io.IOException
 
 private val ghosts = SnapshotStateList<Ghost>()
 private val evidences = SnapshotStateList<Evidence>()
@@ -36,7 +26,7 @@ private val availableEvidences = SnapshotStateList<Evidence>()
 private var dataManager = DataManager()
 private val resolver = Resolver(dataManager, ghosts, evidences, selectedEvidences, availableGhosts, availableEvidences)
 private var popup = Popup(resolver, ghosts, evidences, selectedEvidences, availableGhosts, availableEvidences)
-private val journal = Journal()
+private val journal = Journal(dataManager, evidences)
 
 //Needs to be declared here even though value is never accessed.
 //Initializing in main causes multiple instances to be created.
@@ -71,37 +61,12 @@ fun main() = application {
         alwaysOnTop = true,
         resizable = false,
         icon = icon,
-        state = WindowState(WindowPlacement.Floating, journal.isMinimized, WindowPosition(Alignment.Center), 600.dp, 600.dp),
+        state = WindowState(WindowPlacement.Floating,
+            journal.isMinimized,
+            WindowPosition(Alignment.Center),
+            1000.dp,
+            1000.dp),
     ) {
         journal.content()
-    }
-}
-
-@Composable
-fun <T> AsyncImage(
-    load: suspend () -> T,
-    painterFor: @Composable (T) -> Painter,
-    contentDescription: String,
-    modifier: Modifier = Modifier,
-    contentScale: ContentScale = ContentScale.Fit,
-) {
-    val image: T? by produceState<T?>(null) {
-        value = withContext(Dispatchers.IO) {
-            try {
-                load()
-            } catch (e: IOException) {
-                e.printStackTrace()
-                null
-            }
-        }
-    }
-
-    if (image != null) {
-        Image(
-            painter = painterFor(image!!),
-            contentDescription = contentDescription,
-            contentScale = contentScale,
-            modifier = modifier
-        )
     }
 }

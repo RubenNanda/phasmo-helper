@@ -7,7 +7,6 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.desktop.ui.tooling.preview.Preview
-import androidx.compose.foundation.Indication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -16,16 +15,31 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import data.json.DataManager
+import data.json.model.Equipment
+import data.json.model.Evidence
 import theme.AppTheme
+import windows.journal.pages.JournalPageEquipment
 
-class Journal {
+class Journal(
+    dataManager: DataManager,
+    evidences: SnapshotStateList<Evidence>,
+) {
     var windowState: Boolean by mutableStateOf(true)
     var isMinimized: Boolean by mutableStateOf(false)
 
-    var pages = listOf("Example 1", "Example 2", "Example 3")
+    private val equipmentList: SnapshotStateList<Equipment> = mutableStateListOf()
+
+    init {
+        equipmentList.addAll(dataManager.getEquipment())
+        println("${equipmentList.first()}")
+    }
+
+    var pages = listOf(JournalPageEquipment(equipmentList))
 
     @Preview
     @Composable
@@ -54,7 +68,7 @@ class Journal {
                                         selectedPage = page
                                     },
                                 ) {
-                                    Text(modifier = Modifier.padding(20.dp, 0.dp), text = page)
+                                    Text(modifier = Modifier.padding(20.dp, 0.dp), text = page.displayName())
                                 }
                             }
                         }
@@ -63,7 +77,7 @@ class Journal {
                             shape = RoundedCornerShape(0.dp, 20.dp, 20.dp, 20.dp),
                             color = MaterialTheme.colors.primary
                         ) {
-
+                            CompositionLocalProvider(content = { selectedPage.content() })
                         }
                     }
                 }

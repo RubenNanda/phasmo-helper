@@ -3,6 +3,7 @@ package components
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -15,10 +16,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import theme.AppTheme
 import java.io.IOException
 
 @Composable
@@ -50,66 +49,44 @@ fun <T> AsyncImage(
     }
 }
 
-fun main() = application {
-    Window(
-        onCloseRequest = ::exitApplication,
-        title = "Phasmophobia Helper",
-        transparent = true,
-        undecorated = true,
-        alwaysOnTop = true,
-        resizable = false,
-        state = WindowState(
-            WindowPlacement.Floating, false, WindowPosition(Alignment.Center), 400.dp, 600.dp
-        ),
-    ) {
-        AppTheme(useDarkTheme = true) {
-            ExpandableCard(
-                title = "Strategy",
-                enabled = false,
-                modifier = Modifier.fillMaxSize(0.5f),
-            ) {
-                Text("A banshee is a fucking horrible ghost and i do not like it")
-            }
-        }
-    }
-}
-
 @Composable
 @Preview
 fun ExpandableCard(
     title: String,
-    enabled: Boolean = true,
     modifier: Modifier = Modifier,
+    startExpanded: Boolean = false,
     backgroundColor: Color = MaterialTheme.colors.surface,
     textColor: Color = Color.White,
     content: @Composable () -> Unit,
 ) {
-    var expand by mutableStateOf(true)
+    var expand by mutableStateOf(startExpanded)
 
     Card(
-        //backgroundColor = backgroundColor,
-        shape = RoundedCornerShape(20.dp)
+        backgroundColor = backgroundColor,
+        shape = RoundedCornerShape(20.dp),
+        modifier = Modifier.fillMaxWidth().clickable {
+            expand = !expand
+        }
     ) {
         Column {
-            Row {
-                IconButton(
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(10.dp)
+            ) {
+                Icon(
 
-                    onClick = {
-                        expand = !expand
-                    },
-
-                    ) {
-                    Icon(
-
-                        Icons.Filled.ArrowDropDown,
-                        "contentDescription",
-                        tint = textColor
-                    )
-                }
-                Text(text = title, color = textColor, modifier = Modifier.align(Alignment.CenterVertically))
+                    Icons.Filled.ArrowDropDown,
+                    "expandable card",
+                    tint = textColor
+                )
+                Text(
+                    text = title,
+                    color = textColor,
+                    modifier = Modifier.align(Alignment.CenterVertically).padding(0.dp, 0.dp, 20.dp, 0.dp)
+                )
             }
-            Divider(color = if(expand) textColor else backgroundColor)
+
             AnimatedVisibility(expand) {
+                Divider(modifier = Modifier.padding(20.dp, 0.dp))
                 Box(
                     modifier = Modifier.padding(20.dp)
                 ) {
