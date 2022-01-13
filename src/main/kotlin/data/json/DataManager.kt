@@ -10,7 +10,11 @@ class DataManager {
     enum class File(val filePath: String, val type: Type) {
         GHOST("assets/json/ghost.json", GhostHelperList::class.java),
         EVIDENCE("assets/json/evidence.json", EvidenceHelperList::class.java),
-        EQUIPMENT("assets/json/equipment.json", PageItemList::class.java);
+
+    }
+
+    enum class Page(val filePath:String, val type: Type){
+        EQUIPMENT_PAGE("assets/page/equipment.json", PageItemList::class.java);
     }
 
     /*
@@ -29,6 +33,10 @@ class DataManager {
      */
 
     private fun loadFile(inputFile: File): Any? {
+        return gson.fromJson(javaClass.classLoader.getResource(inputFile.filePath).readText(), inputFile.type)
+    }
+
+    private fun loadFile(inputFile: Page): Any? {
         return gson.fromJson(javaClass.classLoader.getResource(inputFile.filePath).readText(), inputFile.type)
     }
 
@@ -52,8 +60,8 @@ class DataManager {
         throw Exception("Not sure how you did this")
     }
 
-    fun getEquipment(): List<PageItem> {
-        val file = loadFile(File.EQUIPMENT)
+    fun getPage(): List<PageItem> {
+        val file = loadFile(Page.EQUIPMENT_PAGE)
 
         if (file is PageItemList) {
             return file.pageItemList
