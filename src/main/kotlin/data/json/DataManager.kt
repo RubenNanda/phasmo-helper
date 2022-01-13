@@ -1,20 +1,17 @@
 package data.json
 
 import com.google.gson.Gson
+import com.google.gson.JsonParser
 import data.json.model.*
 import java.lang.reflect.Type
 
 class DataManager {
     private val gson = Gson()
 
-    enum class File(val filePath: String, val type: Type) {
+    enum class DataFile(val filePath: String, val type: Type) {
         GHOST("assets/json/ghost.json", GhostHelperList::class.java),
         EVIDENCE("assets/json/evidence.json", EvidenceHelperList::class.java),
 
-    }
-
-    enum class Page(val filePath:String, val type: Type){
-        EQUIPMENT_PAGE("assets/page/equipment.json", PageItemList::class.java);
     }
 
     /*
@@ -32,16 +29,16 @@ class DataManager {
     }
      */
 
-    private fun loadFile(inputFile: File): Any? {
+    private fun loadFile(inputFile: DataFile): Any? {
         return gson.fromJson(javaClass.classLoader.getResource(inputFile.filePath).readText(), inputFile.type)
     }
 
-    private fun loadFile(inputFile: Page): Any? {
-        return gson.fromJson(javaClass.classLoader.getResource(inputFile.filePath).readText(), inputFile.type)
+    private fun loadPage(inputPath: String): Any? {
+        return gson.fromJson(javaClass.classLoader.getResource(inputPath).readText(), Page::class.java)
     }
 
     fun getGhosts(): List<Ghost> {
-        val file = loadFile(File.GHOST)
+        val file = loadFile(DataFile.GHOST)
 
         if (file is GhostHelperList) {
             return file.ghostList
@@ -51,7 +48,7 @@ class DataManager {
     }
 
     fun getEvidences(): List<Evidence> {
-        val file = loadFile(File.EVIDENCE)
+        val file = loadFile(DataFile.EVIDENCE)
 
         if (file is EvidenceHelperList) {
             return file.evidenceList
@@ -60,13 +57,19 @@ class DataManager {
         throw Exception("Not sure how you did this")
     }
 
-    fun getPage(): List<PageItem> {
-        val file = loadFile(Page.EQUIPMENT_PAGE)
+    fun getPages(): List<Page> {
+        val pageList = mutableListOf<Page>()
+        val config =
+            JsonParser.parseString(javaClass.classLoader.getResource("assets/page/config.json").readText()).asJsonObject
 
-        if (file is PageItemList) {
-            return file.pageItemList
+        for (path in config.get("pages").asJsonArray) {
+            val page = loadPage(path.asJsonObject.get("path").asString)
+
+            if (page is Page) {
+                pageList.add(page)
+            }
         }
 
-        throw Exception("Not sure how you did this")
+        return pageList
     }
 }

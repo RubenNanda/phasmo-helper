@@ -15,16 +15,12 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import data.json.DataManager
-import data.json.model.PageItem
-import data.json.model.Evidence
 import theme.AppTheme
 import windows.journal.pages.JournalPage
-import windows.journal.pages.JournalPageEquipment
 
 class Journal(
     dataManager: DataManager
@@ -32,7 +28,13 @@ class Journal(
     var windowState: Boolean by mutableStateOf(true)
     var isMinimized: Boolean by mutableStateOf(false)
 
-    private var pages = listOf(JournalPageEquipment(dataManager))
+    private var pages = mutableStateListOf<JournalPage>()
+
+    init {
+        for(page in dataManager.getPages()){
+            pages.add(JournalPage(page))
+        }
+    }
 
     @Preview
     @Composable
@@ -61,7 +63,7 @@ class Journal(
                                         selectedPage = page
                                     },
                                 ) {
-                                    Text(modifier = Modifier.padding(20.dp, 0.dp), text = page.displayName)
+                                    Text(modifier = Modifier.padding(20.dp, 0.dp), text = page.displayName())
                                 }
                             }
                         }

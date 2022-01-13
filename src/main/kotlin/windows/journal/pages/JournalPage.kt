@@ -12,19 +12,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.ExperimentalUnitApi
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import components.ExpandableCard
-import data.json.model.PageItem
+import data.json.model.Page
 
-open class JournalPage(val displayName: String, private val pageItems: SnapshotStateList<PageItem>) {
+open class JournalPage(val page: Page) {
+    fun displayName() = page.displayName
+
     @Composable
     fun build() {
-        var selectedItem by mutableStateOf(pageItems.first())
+        var selectedItem by mutableStateOf(page.pageItemList.first())
 
         Row {
             Card(
@@ -33,7 +34,7 @@ open class JournalPage(val displayName: String, private val pageItems: SnapshotS
                 Column(
                     modifier = Modifier.fillMaxWidth(0.3f).padding(20.dp)
                 ) {
-                    for (item in pageItems) {
+                    for (item in page.pageItemList) {
                         Button(
                             modifier = Modifier.fillMaxWidth(),
                             onClick = {
