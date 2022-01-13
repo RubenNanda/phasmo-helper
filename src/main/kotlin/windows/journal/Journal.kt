@@ -61,6 +61,7 @@ class Journal(
                                         RoundedCornerShape(20.dp, 20.dp, 0.dp, 0.dp)
                                     ).clickable {
                                         selectedPage = page
+                                        page.resetSelected()
                                     },
                                 ) {
                                     Text(modifier = Modifier.padding(20.dp, 0.dp), text = page.displayName())

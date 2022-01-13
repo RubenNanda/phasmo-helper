@@ -2,6 +2,9 @@
   "pages": [
     {
       "path": "assets/page/equipment.json"
+    },
+    {
+      "path": "assets/page/pageTemplate.json"
     }
   ]
 }

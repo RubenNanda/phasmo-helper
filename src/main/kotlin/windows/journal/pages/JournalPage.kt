@@ -8,10 +8,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.Card
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.ExperimentalUnitApi
 import androidx.compose.ui.unit.TextUnit
@@ -20,13 +17,12 @@ import androidx.compose.ui.unit.dp
 import components.ExpandableCard
 import data.json.model.Page
 
-open class JournalPage(val page: Page) {
-    fun displayName() = page.displayName
+open class JournalPage(private val page: Page) {
+    var selectedItem by  mutableStateOf(page.pageItemList.first())
 
+    fun displayName() = page.displayName
     @Composable
     fun build() {
-        var selectedItem by mutableStateOf(page.pageItemList.first())
-
         Row {
             Card(
                 modifier = Modifier.fillMaxHeight(),
@@ -39,6 +35,7 @@ open class JournalPage(val page: Page) {
                             modifier = Modifier.fillMaxWidth(),
                             onClick = {
                                 selectedItem = item
+                                println(item.displayName)
                             }) {
                             Text(item.displayName)
                         }
@@ -68,5 +65,9 @@ open class JournalPage(val page: Page) {
                 }
             }
         }
+    }
+
+    fun resetSelected(){
+        selectedItem = page.pageItemList.first()
     }
 }
