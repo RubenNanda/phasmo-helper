@@ -26,7 +26,7 @@ private val availableEvidences = SnapshotStateList<Evidence>()
 private var dataManager = DataManager()
 private val resolver = Resolver(dataManager, ghosts, evidences, selectedEvidences, availableGhosts, availableEvidences)
 private var popup = Popup(resolver, ghosts, evidences, selectedEvidences, availableGhosts, availableEvidences)
-private val journal = Journal(dataManager, evidences)
+private val journal = Journal(dataManager)
 
 //Needs to be declared here even though value is never accessed.
 //Initializing in main causes multiple instances to be created.

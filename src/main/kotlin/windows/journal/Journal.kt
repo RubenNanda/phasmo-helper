@@ -20,26 +20,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import data.json.DataManager
-import data.json.model.Equipment
+import data.json.model.PageItem
 import data.json.model.Evidence
 import theme.AppTheme
+import windows.journal.pages.JournalPage
 import windows.journal.pages.JournalPageEquipment
 
 class Journal(
-    dataManager: DataManager,
-    evidences: SnapshotStateList<Evidence>,
+    dataManager: DataManager
 ) {
     var windowState: Boolean by mutableStateOf(true)
     var isMinimized: Boolean by mutableStateOf(false)
 
-    private val equipmentList: SnapshotStateList<Equipment> = mutableStateListOf()
-
-    init {
-        equipmentList.addAll(dataManager.getEquipment())
-        println("${equipmentList.first()}")
-    }
-
-    var pages = listOf(JournalPageEquipment(equipmentList))
+    private var pages = listOf(JournalPageEquipment(dataManager))
 
     @Preview
     @Composable
@@ -68,7 +61,7 @@ class Journal(
                                         selectedPage = page
                                     },
                                 ) {
-                                    Text(modifier = Modifier.padding(20.dp, 0.dp), text = page.displayName())
+                                    Text(modifier = Modifier.padding(20.dp, 0.dp), text = page.displayName)
                                 }
                             }
                         }
@@ -77,7 +70,7 @@ class Journal(
                             shape = RoundedCornerShape(0.dp, 20.dp, 20.dp, 20.dp),
                             color = MaterialTheme.colors.primary
                         ) {
-                            CompositionLocalProvider(content = { selectedPage.content() })
+                            CompositionLocalProvider(content = { selectedPage.build() })
                         }
                     }
                 }

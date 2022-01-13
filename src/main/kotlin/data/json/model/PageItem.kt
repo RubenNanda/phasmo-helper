@@ -1,6 +1,6 @@
 package data.json.model
 
-data class Equipment(
+data class PageItem(
     var displayName: String,
     var sections: MutableList<Pair<String, String>>,
 ) : JsonModel

@@ -2,7 +2,6 @@ package data.json
 
 import com.google.gson.Gson
 import data.json.model.*
-import java.io.File
 import java.lang.reflect.Type
 
 class DataManager {
@@ -11,7 +10,7 @@ class DataManager {
     enum class File(val filePath: String, val type: Type) {
         GHOST("assets/json/ghost.json", GhostHelperList::class.java),
         EVIDENCE("assets/json/evidence.json", EvidenceHelperList::class.java),
-        EQUIPMENT("assets/json/equipment.json", EquipmentList::class.java);
+        EQUIPMENT("assets/json/equipment.json", PageItemList::class.java);
     }
 
     /*
@@ -53,11 +52,11 @@ class DataManager {
         throw Exception("Not sure how you did this")
     }
 
-    fun getEquipment(): List<Equipment> {
+    fun getEquipment(): List<PageItem> {
         val file = loadFile(File.EQUIPMENT)
 
-        if (file is EquipmentList) {
-            return file.equipmentList
+        if (file is PageItemList) {
+            return file.pageItemList
         }
 
         throw Exception("Not sure how you did this")
