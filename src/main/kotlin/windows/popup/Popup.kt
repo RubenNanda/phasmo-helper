@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -42,6 +43,7 @@ class Popup(
             AnimatedVisibility(windowState != TriState.TRALSE) {
                 Surface(
                     modifier = Modifier.padding(15.dp),
+                    color = MaterialTheme.colors.background,
                     shape = RoundedCornerShape(20.dp)
                 ) {
                     Text(text = "")

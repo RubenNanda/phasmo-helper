@@ -3,13 +3,11 @@
 package windows.journal.pages
 
 import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.gestures.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -46,7 +44,6 @@ open class JournalPage(private val page: Page) : windows.journal.pages.Page {
                             shape = RoundedCornerShape(20.dp),
                             onClick = {
                                 selectedItem = item
-                                println(item.displayName)
                             }) {
                             Text(
                                 modifier = Modifier.padding(20.dp, 10.dp, 0.dp, 0.dp),
@@ -59,7 +56,6 @@ open class JournalPage(private val page: Page) : windows.journal.pages.Page {
             }
 
             // Selected item content
-
             Surface(
                 modifier = Modifier.fillMaxSize(),
                 color = MaterialTheme.colors.background,

@@ -73,7 +73,6 @@ fun ExpandableCard(
                 modifier = Modifier.fillMaxWidth().padding(10.dp)
             ) {
                 Icon(
-
                     Icons.Filled.ArrowDropDown,
                     "expandable card",
                     tint = textColor

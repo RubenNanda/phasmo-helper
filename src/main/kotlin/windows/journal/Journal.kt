@@ -49,7 +49,6 @@ class Journal(
                     color = MaterialTheme.colors.background,
                     shape = RoundedCornerShape(20.dp),
                     modifier = Modifier.fillMaxSize(),
-
                     ) {
                     Column(
                         modifier = Modifier.padding(20.dp)
