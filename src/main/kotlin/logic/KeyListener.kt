@@ -4,6 +4,7 @@ package logic
 
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import data.json.model.Evidence
+import data.json.model.Settings
 import data.structures.TriState
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
@@ -18,6 +19,7 @@ import java.util.logging.Level
 import java.util.logging.Logger
 
 class KeyListener(
+    private val settings: Settings,
     private val resolver: Resolver,
     private val popup: Popup,
     private val journal: Journal,
@@ -47,8 +49,8 @@ class KeyListener(
             }
         }
 
-        when (key) {
-            "NumPad 0" -> {
+        when(key){
+            settings.getKeybinding(ActionTypes.TOGGLE_POPUP) ->{
                 popup.windowState = popup.windowState.next()
 
                 if (popup.windowState == TriState.TRALSE) {
@@ -60,13 +62,7 @@ class KeyListener(
                     popup.isMinimized = false
                 }
             }
-            "NumPad Separator" -> {
-                popup.showTips = !popup.showTips
-            }
-            "NumPad Subtract" -> {
-                resolver.clearEvidences()
-            }
-            "NumPad Add" -> {
+            settings.getKeybinding(ActionTypes.TOGGLE_JOURNAL) -> {
                 journal.windowState = !journal.windowState
 
                 if (journal.windowState) {
@@ -78,7 +74,12 @@ class KeyListener(
                     }
                 }
             }
-            else -> println(key)
+            settings.getKeybinding(ActionTypes.TOGGLE_TIPS) -> {
+                popup.showTips = !popup.showTips
+            }
+            settings.getKeybinding(ActionTypes.UNSELECT_EVIDENCES) -> {
+                resolver.clearEvidences()
+            }
         }
     }
 

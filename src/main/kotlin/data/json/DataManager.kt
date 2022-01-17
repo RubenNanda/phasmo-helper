@@ -5,13 +5,19 @@ import com.google.gson.JsonParser
 import data.json.model.*
 import java.lang.reflect.Type
 
+fun main() {
+    val gson = Gson()
+    val settings = Settings(mutableMapOf())
+    println(gson.toJson(settings))
+}
+
 class DataManager {
     private val gson = Gson()
 
     enum class DataFile(val filePath: String, val type: Type) {
         GHOST("assets/json/ghost.json", GhostHelperList::class.java),
         EVIDENCE("assets/json/evidence.json", EvidenceHelperList::class.java),
-
+        SETTINGS("assets/json/settings.json", Settings::class.java)
     }
 
     /*
@@ -52,6 +58,16 @@ class DataManager {
 
         if (file is EvidenceHelperList) {
             return file.evidenceList
+        }
+
+        throw Exception("Not sure how you did this")
+    }
+
+    fun getSettings(): Settings {
+        val file = loadFile(DataFile.SETTINGS)
+
+        if (file is Settings) {
+            return file
         }
 
         throw Exception("Not sure how you did this")
