@@ -22,6 +22,7 @@ import data.json.DataManager
 import theme.AppTheme
 import windows.journal.pages.JournalPage
 import windows.journal.pages.Page
+import windows.journal.pages.SettingsPage
 
 class Journal(
     dataManager: DataManager
@@ -35,7 +36,7 @@ class Journal(
         for(page in dataManager.getPages()){
             pages.add(JournalPage(page))
         }
-        //pages.add(SettingsPage())
+        pages.add(SettingsPage(dataManager.getSettings()))
     }
 
     @Preview
