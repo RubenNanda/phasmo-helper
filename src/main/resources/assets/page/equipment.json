@@ -18,7 +18,7 @@
         },
         {
           "first": "Function",
-          "second": "When a ghost interacts with a candle, the fire will be extinguished with a blowing \"sigh\" effect. A candle will also extinguish itself after a few minutes if the Ghost has not blown it out first. An objective may appear on the objective board requiring ghost hunters to detect a ghost's presence using a candle.\n\nThrowing a lit candle, or leaving it out in heavy rain will cause it to extinguish. A candle toppling over may also extinguish, depending on velocity.\n\nWhen held, a lit candle will stop passive sanity drain that results from being in the dark. This may be useful in delaying hunts from occuring, especially if the ghost has a higher hunt sanity threshold, or to achieve objectives without the risk of a hunt. This also works when the player is standing right next to a candle. Lit candles do not prevent sanity drain from other sources such as ghost events or other players dying.\n\nIf an Onryo blows out a candle, it has a chance of starting a hunt, regardless of sanity; this chance increases for every dead player. Additional candles also act as crucifixes, being blown out instead of the ghost hunting,[verify] while an absence of candles increases it to 60%"
+          "second": "When a ghost interacts with a candle, the fire will be extinguished with a blowing \"sigh\" effect. A candle will also extinguish itself after a few minutes if the Ghost has not blown it out first. An objective may appear on the objective board requiring ghost hunters to detect a ghost's presence using a candle.\n\nThrowing a lit candle, or leaving it out in heavy rain will cause it to extinguish. A candle toppling over may also extinguish, depending on velocity.\n\nWhen held, a lit candle will stop passive sanity drain that results from being in the dark. This may be useful in delaying hunts from occuring, especially if the ghost has a higher hunt sanity threshold, or to achieve objectives without the risk of a hunt. This also works when the player is standing right next to a candle. Lit candles do not prevent sanity drain from other sources such as ghost events or other players dying.\n\nIf an Onryo blows out a candle, it has a chance of starting a hunt, regardless of sanity; this chance increases for every dead player. Additional candles also act as crucifixes, being blown out instead of the ghost hunting,[verify] while an absence of candles increases it to 60%."
         },
         {
           "first": "Tips",
@@ -27,6 +27,19 @@
         {
           "first": "Trivia",
           "second": "Candles are not extinguished by being placed in water.\nPurchasable candles are much brighter than those found in maps."
+        }
+      ]
+    },
+    {
+      "displayName": "Crucifix",
+      "sections": [
+        {
+          "first": "Description",
+          "second": "The crucifix is a purchasable item that is used to prevent ghosts from hunting."
+        },
+        {
+          "first": "Usage",
+          "second": "When the ghost attempts to initiate a hunt and not when a hunt has already commenced, if a crucifix is within 3 meters of the ghost (or 5 meters if the ghost is a Banshee), the hunt will fail to begin. The crucifix works both when placed down or while being held. Each time a crucifix blocks a hunt, there is a 5 second delay before the ghost can attempt another hunt. The crucifix will have a different visual appearance when it is being used up: when it is used once"
         }
       ]
     }

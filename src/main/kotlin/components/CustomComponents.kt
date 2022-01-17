@@ -61,8 +61,8 @@ fun ExpandableCard(
 ) {
     var expand by mutableStateOf(startExpanded)
 
-    Card(
-        backgroundColor = backgroundColor,
+    Surface(
+        color = backgroundColor,
         shape = RoundedCornerShape(20.dp),
         modifier = Modifier.fillMaxWidth().clickable {
             expand = !expand

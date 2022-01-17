@@ -1,14 +1,19 @@
-@file:OptIn(ExperimentalUnitApi::class)
+@file:OptIn(ExperimentalUnitApi::class, ExperimentalMaterialApi::class)
 
 package windows.journal.pages
 
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Button
-import androidx.compose.material.Card
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.ExperimentalUnitApi
 import androidx.compose.ui.unit.TextUnit
@@ -17,57 +22,87 @@ import androidx.compose.ui.unit.dp
 import components.ExpandableCard
 import data.json.model.Page
 
-open class JournalPage(private val page: Page) {
-    var selectedItem by  mutableStateOf(page.pageItemList.first())
+open class JournalPage(private val page: Page) : windows.journal.pages.Page {
+    var selectedItem by mutableStateOf(page.pageItemList.first())
 
-    fun displayName() = page.displayName
+    override fun displayName() = page.displayName
+
     @Composable
-    fun build() {
+    override fun build() {
         Row {
-            Card(
+            // Item select button column
+            Surface(
                 modifier = Modifier.fillMaxHeight(),
+                color = MaterialTheme.colors.surface,
+                shape = RoundedCornerShape(0.dp, 0.dp, 0.dp, 20.dp)
             ) {
                 Column(
-                    modifier = Modifier.fillMaxWidth(0.3f).padding(20.dp)
+                    modifier = Modifier.fillMaxWidth(0.3f).padding(20.dp).verticalScroll(ScrollState(0))
                 ) {
                     for (item in page.pageItemList) {
-                        Button(
-                            modifier = Modifier.fillMaxWidth(),
+                        Surface(
+                            modifier = Modifier.fillMaxWidth().height(60.dp).padding(0.dp, 0.dp, 0.dp, 20.dp),
+                            color = if (selectedItem == item) MaterialTheme.colors.primary else MaterialTheme.colors.secondary,
+                            shape = RoundedCornerShape(20.dp),
                             onClick = {
                                 selectedItem = item
                                 println(item.displayName)
                             }) {
-                            Text(item.displayName)
+                            Text(
+                                modifier = Modifier.padding(20.dp, 10.dp, 0.dp, 0.dp),
+                                text = item.displayName,
+                                color = MaterialTheme.colors.onPrimary,
+                            )
                         }
                     }
                 }
             }
-            Column(
-                modifier = Modifier.verticalScroll(ScrollState(0))
+
+            // Selected item content
+
+            Surface(
+                modifier = Modifier.fillMaxSize(),
+                color = MaterialTheme.colors.background,
+                shape = RoundedCornerShape(0.dp, 20.dp, 20.dp, 0.dp)
             ) {
-                Card(
-                    modifier = Modifier.fillMaxWidth()
+                Column(
+                    modifier = Modifier.verticalScroll(ScrollState(0))
                 ) {
-                    Text(
-                        text = selectedItem.displayName,
-                        fontSize = TextUnit(2.0F, TextUnitType.Em),
-                        modifier = Modifier.padding(20.dp)
-                    )
-                }
-                for (section in selectedItem.sections) {
-                    ExpandableCard(
-                        modifier = Modifier.fillMaxWidth(),
-                        title = section.first,
-                        startExpanded = true
+                    Surface(
+                        modifier = Modifier.fillMaxWidth().padding(20.dp, 20.dp, 20.dp, 20.dp),
+                        color = MaterialTheme.colors.background,
+                        shape = RoundedCornerShape(20.dp)
                     ) {
-                        Text(text = section.second)
+                        Text(
+                            text = selectedItem.displayName,
+                            color = MaterialTheme.colors.onPrimary,
+                            fontSize = TextUnit(2.0F, TextUnitType.Em),
+                            modifier = Modifier.padding(20.dp)
+                        )
+                    }
+                    for (section in selectedItem.sections) {
+                        Box(
+                            modifier = Modifier.padding(20.dp, 0.dp, 20.dp, 20.dp)
+                        ) {
+                            ExpandableCard(
+                                modifier = Modifier.fillMaxWidth(),
+                                title = section.first,
+                                startExpanded = true,
+                                backgroundColor = MaterialTheme.colors.surface
+                            ) {
+                                Text(
+                                    text = section.second,
+                                    color = MaterialTheme.colors.onPrimary
+                                )
+                            }
+                        }
                     }
                 }
             }
         }
     }
 
-    fun resetSelected(){
+    override fun resetSelected() {
         selectedItem = page.pageItemList.first()
     }
 }

@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import data.json.DataManager
 import theme.AppTheme
 import windows.journal.pages.JournalPage
+import windows.journal.pages.Page
 
 class Journal(
     dataManager: DataManager
@@ -28,12 +29,13 @@ class Journal(
     var windowState: Boolean by mutableStateOf(true)
     var isMinimized: Boolean by mutableStateOf(false)
 
-    private var pages = mutableStateListOf<JournalPage>()
+    private var pages = mutableStateListOf<Page>()
 
     init {
         for(page in dataManager.getPages()){
             pages.add(JournalPage(page))
         }
+        //pages.add(SettingsPage())
     }
 
     @Preview
@@ -44,12 +46,16 @@ class Journal(
         AppTheme(useDarkTheme = true) {
             AnimatedVisibility(visible = windowState, enter = scaleIn(), exit = scaleOut()) {
                 Surface(
+                    color = MaterialTheme.colors.background,
+                    shape = RoundedCornerShape(20.dp),
                     modifier = Modifier.fillMaxSize(),
-                    shape = RoundedCornerShape(20.dp)
-                ) {
+
+                    ) {
                     Column(
                         modifier = Modifier.padding(20.dp)
                     ) {
+
+                        // Page select button row
                         Row(
                             modifier = Modifier.height(50.dp),
                         ) {
@@ -57,24 +63,24 @@ class Journal(
                                 Box(
                                     contentAlignment = Alignment.Center,
                                     modifier = Modifier.fillMaxHeight().background(
-                                        if (selectedPage == page) MaterialTheme.colors.primary else MaterialTheme.colors.surface,
+                                        if (selectedPage == page) MaterialTheme.colors.primary else MaterialTheme.colors.secondary,
                                         RoundedCornerShape(20.dp, 20.dp, 0.dp, 0.dp)
                                     ).clickable {
                                         selectedPage = page
                                         page.resetSelected()
                                     },
                                 ) {
-                                    Text(modifier = Modifier.padding(20.dp, 0.dp), text = page.displayName())
+                                    Text(
+                                        modifier = Modifier.padding(20.dp, 0.dp),
+                                        text = page.displayName(),
+                                        color = MaterialTheme.colors.onPrimary
+                                    )
                                 }
                             }
                         }
-                        Surface(
-                            modifier = Modifier.fillMaxSize(),
-                            shape = RoundedCornerShape(0.dp, 20.dp, 20.dp, 20.dp),
-                            color = MaterialTheme.colors.primary
-                        ) {
-                            CompositionLocalProvider(content = { selectedPage.build() })
-                        }
+
+                        // Selected page content
+                        CompositionLocalProvider(content = { selectedPage.build() })
                     }
                 }
             }
